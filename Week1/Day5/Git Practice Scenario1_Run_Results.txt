@@ -1,0 +1,746 @@
+
+==============================================================================
+Task 1 - Setup and first commits
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task1/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> add README.md
+> git -C <repo> commit -m "Add README"
+[main (root-commit) f0233b7] Add README
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+Checkpoint after staging only README.md:
+> git -C <repo> status --short
+?? cart.txt
+> git -C <repo> add -- cart.txt
+> git -C <repo> commit -m "Add cart module"
+[main 8a11aa7] Add cart module
+ 1 file changed, 1 insertion(+)
+ create mode 100644 cart.txt
+Final one-line history and clean status:
+> git -C <repo> log --oneline
+8a11aa7 Add cart module
+f0233b7 Add README
+> git -C <repo> status --short --branch
+## main
+
+==============================================================================
+Task 2 - Undoing mistakes
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task2/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Add README"
+[main (root-commit) 245ef77] Add README
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+> git -C <repo> add -- cart.txt
+> git -C <repo> commit -m "Add cart module"
+[main 4b86a50] Add cart module
+ 1 file changed, 1 insertion(+)
+ create mode 100644 cart.txt
+> git -C <repo> restore -- cart.txt
+Cart after discarding the temporary edit:
+add item
+> git -C <repo> add -- .gitignore
+> git -C <repo> commit -m "Ignore local secrets and logs"
+[main 3d7cd8d] Ignore local secrets and logs
+ 1 file changed, 2 insertions(+)
+ create mode 100644 .gitignore
+> git -C <repo> check-ignore -v -- secrets.env debug.log
+.gitignore:2:secrets.env	secrets.env
+.gitignore:1:*.log	debug.log
+> git -C <repo> add cart.txt
+After accidentally staging cart.txt:
+> git -C <repo> status --short
+M  cart.txt
+> git -C <repo> restore --staged -- cart.txt
+After unstaging while keeping the edit:
+> git -C <repo> status --short
+ M cart.txt
+> git -C <repo> add -- cart.txt
+> git -C <repo> commit -m "Ad payment"
+[main bae780d] Ad payment
+ 1 file changed, 1 insertion(+)
+> git -C <repo> commit --amend -m "Add payment"
+[main 8f89e41] Add payment
+ Date: Wed Nov 18 14:15:28 2026 -0600
+ 1 file changed, 1 insertion(+)
+Final ignored-file check and corrected commit:
+> git -C <repo> status --short --ignored
+!! debug.log
+!! secrets.env
+> git -C <repo> log -1 --oneline
+8f89e41 Add payment
+
+==============================================================================
+Task 3 - Branching and merging
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task3/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Start ShopEasy"
+[main (root-commit) 1a0f3bf] Start ShopEasy
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+> git -C <repo> switch -c feature/wishlist
+Switched to a new branch 'feature/wishlist'
+> git -C <repo> add -- wishlist.txt
+> git -C <repo> commit -m "Start wishlist"
+[feature/wishlist f7d0a50] Start wishlist
+ 1 file changed, 1 insertion(+)
+ create mode 100644 wishlist.txt
+> git -C <repo> add -- wishlist.txt
+> git -C <repo> commit -m "Add first wishlist item"
+[feature/wishlist 60e7379] Add first wishlist item
+ 1 file changed, 1 insertion(+)
+> git -C <repo> switch main
+Switched to branch 'main'
+> git -C <repo> merge --ff-only feature/wishlist
+Updating 1a0f3bf..60e7379
+Fast-forward
+ wishlist.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+ create mode 100644 wishlist.txt
+> git -C <repo> switch -c feature/reviews
+Switched to a new branch 'feature/reviews'
+> git -C <repo> add -- reviews.txt
+> git -C <repo> commit -m "Add review flow"
+[feature/reviews 41c0880] Add review flow
+ 1 file changed, 1 insertion(+)
+ create mode 100644 reviews.txt
+> git -C <repo> switch main
+Switched to branch 'main'
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Update main while reviews is in progress"
+[main 3cb5fc4] Update main while reviews is in progress
+ 1 file changed, 1 insertion(+)
+> git -C <repo> merge --no-ff feature/reviews -m "Merge reviews"
+Merge made by the 'ort' strategy.
+ reviews.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 reviews.txt
+> git -C <repo> branch -d feature/reviews
+Deleted branch feature/reviews (was 41c0880).
+> git -C <repo> branch -d feature/wishlist
+Deleted branch feature/wishlist (was 60e7379).
+Final graph and remaining branches:
+> git -C <repo> log --oneline --graph --all
+*   08683a6 Merge reviews
+|\  
+| * 41c0880 Add review flow
+* | 3cb5fc4 Update main while reviews is in progress
+|/  
+* 60e7379 Add first wishlist item
+* f7d0a50 Start wishlist
+* 1a0f3bf Start ShopEasy
+> git -C <repo> branch --list
+* main
+
+==============================================================================
+Task 4 - Resolving merge conflicts
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task4/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> add -- price.txt
+> git -C <repo> commit -m "Set initial price"
+[main (root-commit) 72009c2] Set initial price
+ 1 file changed, 1 insertion(+)
+ create mode 100644 price.txt
+> git -C <repo> switch -c feature/discount
+Switched to a new branch 'feature/discount'
+> git -C <repo> add -- price.txt
+> git -C <repo> commit -m "Set discount price"
+[feature/discount 14e5f64] Set discount price
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+> git -C <repo> switch main
+Switched to branch 'main'
+> git -C <repo> add -- price.txt
+> git -C <repo> commit -m "Set standard price"
+[main 7f50343] Set standard price
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+> git -C <repo> merge feature/discount --no-edit
+Auto-merging price.txt
+CONFLICT (content): Merge conflict in price.txt
+Automatic merge failed; fix conflicts and then commit the result.
+First merge attempt produced conflict markers:
+<<<<<<< HEAD
+Price: 110
+=======
+Price: 90
+>>>>>>> feature/discount
+> git -C <repo> status --short
+UU price.txt
+> git -C <repo> merge --abort
+After abort, status is clean:
+> git -C <repo> status --short --branch
+## main
+> git -C <repo> merge feature/discount --no-edit
+Auto-merging price.txt
+CONFLICT (content): Merge conflict in price.txt
+Automatic merge failed; fix conflicts and then commit the result.
+> git -C <repo> add price.txt
+> git -C <repo> commit -m "Merge discount at price 95"
+[main 05c6f13] Merge discount at price 95
+Final file, marker check, and merge graph:
+Price: 95
+Conflict markers: none
+> git -C <repo> log --oneline --graph --all
+*   05c6f13 Merge discount at price 95
+|\  
+| * 14e5f64 Set discount price
+* | 7f50343 Set standard price
+|/  
+* 72009c2 Set initial price
+
+==============================================================================
+Task 5 - Stash and context switching
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task5/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> add -- cart.txt
+> git -C <repo> commit -m "Initialize cart"
+[main (root-commit) ee7c5fe] Initialize cart
+ 1 file changed, 1 insertion(+)
+ create mode 100644 cart.txt
+> git -C <repo> switch -c feature/cart
+Switched to a new branch 'feature/cart'
+> git -C <repo> stash push -m "WIP cart"
+Saved working directory and index state On feature/cart: WIP cart
+> git -C <repo> switch -c hotfix/login main
+Switched to a new branch 'hotfix/login'
+> git -C <repo> add -- login-policy.txt
+> git -C <repo> commit -m "Fix invalid login handling"
+[hotfix/login 7d22353] Fix invalid login handling
+ 1 file changed, 1 insertion(+)
+ create mode 100644 login-policy.txt
+> git -C <repo> switch main
+Switched to branch 'main'
+> git -C <repo> merge --no-ff hotfix/login -m "Merge login hotfix"
+Merge made by the 'ort' strategy.
+ login-policy.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 login-policy.txt
+> git -C <repo> switch feature/cart
+Switched to branch 'feature/cart'
+> git -C <repo> stash pop
+On branch feature/cart
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   cart.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Dropped refs/stash@{0} (dcc5819a886feba9426383aaaaaf079b045772b7)
+Restored cart and remaining stash list:
+cart: add item
+> git -C <repo> stash list
+> git -C <repo> status --short --branch
+## feature/cart
+ M cart.txt
+
+==============================================================================
+Task 6 - Rewriting and undoing history
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task6/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Start history"
+[main (root-commit) 836f52c] Start history
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+> git -C <repo> add -- commit-A.txt
+> git -C <repo> commit -m A
+[main 9e8fbbf] A
+ 1 file changed, 1 insertion(+)
+ create mode 100644 commit-A.txt
+> git -C <repo> add -- commit-B.txt
+> git -C <repo> commit -m B
+[main a1413f4] B
+ 1 file changed, 1 insertion(+)
+ create mode 100644 commit-B.txt
+> git -C <repo> add -- commit-C.txt
+> git -C <repo> commit -m C
+[main edd94d7] C
+ 1 file changed, 1 insertion(+)
+ create mode 100644 commit-C.txt
+> git -C <repo> add -- commit-D.txt
+> git -C <repo> commit -m D
+[main aed2de2] D
+ 1 file changed, 1 insertion(+)
+ create mode 100644 commit-D.txt
+> git -C <repo> rev-parse HEAD~1
+edd94d7af51b270e50d5e22cbc0c9bd84d9bdb29
+C commit selected for revert: edd94d7af51b270e50d5e22cbc0c9bd84d9bdb29
+> git -C <repo> revert --no-edit edd94d7af51b270e50d5e22cbc0c9bd84d9bdb29
+[main 078576e] Revert "C"
+ Date: Wed Nov 18 14:15:41 2026 -0600
+ 1 file changed, 1 deletion(-)
+ delete mode 100644 commit-C.txt
+History after reverting C (C remains in history; a new revert commit is added):
+> git -C <repo> log --oneline --graph
+* 078576e Revert "C"
+* aed2de2 D
+* edd94d7 C
+* a1413f4 B
+* 9e8fbbf A
+* 836f52c Start history
+> git -C <repo> add -- commit-E.txt
+> git -C <repo> commit -m E
+[main b097d5e] E
+ 1 file changed, 1 insertion(+)
+ create mode 100644 commit-E.txt
+> git -C <repo> reset --soft HEAD~1
+Staging state after soft reset:
+> git -C <repo> status --short
+A  commit-E.txt
+> git -C <repo> reset --hard HEAD~2
+HEAD is now at edd94d7 C
+Reflog used to find the lost E commit:
+> git -C <repo> reflog --format=%H|%gs -n 12
+edd94d7af51b270e50d5e22cbc0c9bd84d9bdb29|reset: moving to HEAD~2
+078576e5b00f9af7deffdfc672335aa6469bf194|reset: moving to HEAD~1
+b097d5e493104f2125f45ba698b7e6dd41b27569|commit: E
+078576e5b00f9af7deffdfc672335aa6469bf194|revert: Revert "C"
+aed2de2c7313c44ef19b3e609e60f94f0823c27e|commit: D
+edd94d7af51b270e50d5e22cbc0c9bd84d9bdb29|commit: C
+a1413f483111bef3f221b4bb9c7d9be285963250|commit: B
+9e8fbbfd16cf97ceb389e2b3bdd48c9688492b71|commit: A
+836f52cac27366b0f792569b2d46c5ab9ef63603|commit (initial): Start history
+Recovering E from reflog: b097d5e493104f2125f45ba698b7e6dd41b27569
+> git -C <repo> reset --hard b097d5e493104f2125f45ba698b7e6dd41b27569
+HEAD is now at b097d5e E
+> git -C <repo> log --oneline --graph
+* b097d5e E
+* 078576e Revert "C"
+* aed2de2 D
+* edd94d7 C
+* a1413f4 B
+* 9e8fbbf A
+* 836f52c Start history
+> git -C <repo> status --short --branch
+## main
+
+==============================================================================
+Task 7 - Rebase and a clean history
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task7/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Start ShopEasy"
+[main (root-commit) 1038446] Start ShopEasy
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+> git -C <repo> switch -c feature/checkout
+Switched to a new branch 'feature/checkout'
+> git -C <repo> add -- checkout.txt
+> git -C <repo> commit -m "wip checkout form"
+[feature/checkout 09d374a] wip checkout form
+ 1 file changed, 1 insertion(+)
+ create mode 100644 checkout.txt
+> git -C <repo> add -- checkout.txt
+> git -C <repo> commit -m "fix typo"
+[feature/checkout 836fa07] fix typo
+ 1 file changed, 1 insertion(+)
+> git -C <repo> add -- checkout.txt
+> git -C <repo> commit -m "fix again"
+[feature/checkout 1304d63] fix again
+ 1 file changed, 1 insertion(+)
+> git -C <repo> add -- checkout.txt
+> git -C <repo> commit -m "wip validation"
+[feature/checkout 4526f48] wip validation
+ 1 file changed, 1 insertion(+)
+> git -C <repo> switch main
+Switched to branch 'main'
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Update main before checkout rebase"
+[main 33d7a7b] Update main before checkout rebase
+ 1 file changed, 1 insertion(+)
+> git -C <repo> switch feature/checkout
+Switched to branch 'feature/checkout'
+> git -C <repo> rebase main
+Rebasing (1/4)
+Rebasing (2/4)
+Rebasing (3/4)
+Rebasing (4/4)
+Successfully rebased and updated refs/heads/feature/checkout.
+> git -C <repo> rebase -i HEAD~4
+Rebasing (2/5)
+Rebasing (3/5)
+Rebasing (4/5)
+Rebasing (5/5)
+Executing: git commit --amend -m "Add checkout flow"
+[detached HEAD e772f70] Add checkout flow
+ Date: Wed Nov 18 14:15:43 2026 -0600
+ 1 file changed, 4 insertions(+)
+ create mode 100644 checkout.txt
+Successfully rebased and updated refs/heads/feature/checkout.
+Rebased and squashed history:
+> git -C <repo> log --oneline --graph --all
+* e772f70 Add checkout flow
+* 33d7a7b Update main before checkout rebase
+* 1038446 Start ShopEasy
+> git -C <repo> switch main
+Switched to branch 'main'
+> git -C <repo> merge --ff-only feature/checkout
+Updating 33d7a7b..e772f70
+Fast-forward
+ checkout.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
+ create mode 100644 checkout.txt
+> git -C <repo> branch -d feature/checkout
+Deleted branch feature/checkout (was e772f70).
+> git -C <repo> log --oneline --graph --all
+* e772f70 Add checkout flow
+* 33d7a7b Update main before checkout rebase
+* 1038446 Start ShopEasy
+
+==============================================================================
+Task 8 - Cherry-pick, tags and comparing
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task8/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Start release practice"
+[main (root-commit) b791aeb] Start release practice
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+> git -C <repo> switch -c dev
+Switched to a new branch 'dev'
+> git -C <repo> add -- dev-plan.txt
+> git -C <repo> commit -m "Add dev setup"
+[dev a2bc1d2] Add dev setup
+ 1 file changed, 1 insertion(+)
+ create mode 100644 dev-plan.txt
+> git -C <repo> add -- bugfix.txt
+> git -C <repo> commit -m "Fix cart quantity validation"
+[dev 264c273] Fix cart quantity validation
+ 1 file changed, 1 insertion(+)
+ create mode 100644 bugfix.txt
+> git -C <repo> add -- dev-notes.txt
+> git -C <repo> commit -m "Add payment refactor notes"
+[dev 55ab37b] Add payment refactor notes
+ 1 file changed, 1 insertion(+)
+ create mode 100644 dev-notes.txt
+> git -C <repo> rev-parse HEAD~1
+264c273d090b2395c4ab38aacca51d25bcf4a1bf
+> git -C <repo> switch main
+Switched to branch 'main'
+> git -C <repo> cherry-pick 264c273d090b2395c4ab38aacca51d25bcf4a1bf
+[main 8e3a585] Fix cart quantity validation
+ Date: Wed Nov 18 14:15:48 2026 -0600
+ 1 file changed, 1 insertion(+)
+ create mode 100644 bugfix.txt
+> git -C <repo> tag -a v1.0.0 -m "Release v1.0.0"
+Diff from v1.0.0 to the working tree:
+> git -C <repo> diff v1.0.0
+diff --git a/README.md b/README.md
+index b6716e9..daeb5c2 100644
+--- a/README.md
++++ b/README.md
+@@ -1 +1,2 @@
+ ShopEasy release practice
++Release note: payment validation is ready.
+Tags and main history:
+> git -C <repo> tag --list
+v1.0.0
+> git -C <repo> log --oneline --graph main
+* 8e3a585 Fix cart quantity validation
+* b791aeb Start release practice
+> git -C <repo> status --short --branch
+## main
+ M README.md
+
+==============================================================================
+Task 9 - Remotes and collaboration
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task9/original/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> init --bare -b main C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server.git
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task9/server.git/
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Start shared project"
+[main (root-commit) eecc1d4] Start shared project
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+> git -C <repo> remote add origin C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server.git
+> git -C <repo> push -u origin main
+branch 'main' set up to track 'origin/main'.
+To C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server.git
+ * [new branch]      main -> main
+> git -C <repo> clone C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server.git C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\teammate
+Cloning into 'C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\teammate'...
+done.
+> git -C <repo> config user.name "ShopEasy Teammate"
+> git -C <repo> config user.email teammate@shopeasy.local
+> git -C <repo> add -- teammate.txt
+warning: in the working copy of 'teammate.txt', LF will be replaced by CRLF the next time Git touches it
+> git -C <repo> commit -m "Add teammate update"
+[main 838bcf5] Add teammate update
+ 1 file changed, 1 insertion(+)
+ create mode 100644 teammate.txt
+> git -C <repo> push origin main
+To C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server.git
+   eecc1d4..838bcf5  main -> main
+> git -C <repo> fetch origin
+From C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server
+   eecc1d4..838bcf5  main       -> origin/main
+Fetched commit not yet on local main:
+> git -C <repo> log --oneline main..origin/main
+838bcf5 Add teammate update
+> git -C <repo> pull --ff-only origin main
+From C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server
+ * branch            main       -> FETCH_HEAD
+Updating eecc1d4..838bcf5
+Fast-forward
+ teammate.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 teammate.txt
+> git -C <repo> switch -c feature/temporary
+Switched to a new branch 'feature/temporary'
+> git -C <repo> add -- temporary.txt
+> git -C <repo> commit -m "Add temporary branch change"
+[feature/temporary 6ad079e] Add temporary branch change
+ 1 file changed, 1 insertion(+)
+ create mode 100644 temporary.txt
+> git -C <repo> push -u origin feature/temporary
+branch 'feature/temporary' set up to track 'origin/feature/temporary'.
+To C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server.git
+ * [new branch]      feature/temporary -> feature/temporary
+> git -C <repo> branch -r
+  origin/HEAD -> origin/main
+  origin/feature/temporary
+  origin/main
+> git -C <repo> push origin --delete feature/temporary
+To C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task9\server.git
+ - [deleted]         feature/temporary
+> git -C <repo> switch main
+Your branch is up to date with 'origin/main'.
+Switched to branch 'main'
+Remote branches after deletion and final tracking status:
+> git -C <repo> branch -r
+  origin/HEAD -> origin/main
+  origin/main
+> git -C <repo> status --short --branch
+## main...origin/main
+
+==============================================================================
+Task 10 - Final challenge
+==============================================================================
+> git -C <repo> init -b main
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task10/original/.git/
+> git -C <repo> config user.name "ShopEasy Student"
+> git -C <repo> config user.email student@shopeasy.local
+> git -C <repo> config core.autocrlf false
+> git -C <repo> init --bare -b main C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task10\server.git
+Initialized empty Git repository in C:/Users/James/Documents/Codex/2026-11-13/referenced-chatgpt-conversation-this-is-an/work/day5-scenarios-20261118/task10/server.git/
+> git -C <repo> add -- README.md
+> git -C <repo> commit -m "Start payment release"
+[main (root-commit) 02da78f] Start payment release
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+> git -C <repo> add payment.txt cart.txt
+> git -C <repo> commit -m "Add payment and cart baseline"
+[main 0c52441] Add payment and cart baseline
+ 2 files changed, 2 insertions(+)
+ create mode 100644 cart.txt
+ create mode 100644 payment.txt
+> git -C <repo> remote add origin C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task10\server.git
+> git -C <repo> push -u origin main
+branch 'main' set up to track 'origin/main'.
+To C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task10\server.git
+ * [new branch]      main -> main
+> git -C <repo> switch -c feature/payments
+Switched to a new branch 'feature/payments'
+> git -C <repo> add -- payment-plan.txt
+> git -C <repo> commit -m "Start payments flow"
+[feature/payments 67cf4a8] Start payments flow
+ 1 file changed, 1 insertion(+)
+ create mode 100644 payment-plan.txt
+> git -C <repo> add -- payment.txt
+> git -C <repo> commit -m "Use Stripe provider"
+[feature/payments 4f43954] Use Stripe provider
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+> git -C <repo> add -- payment-logging.txt
+> git -C <repo> commit -m "Add payment logging"
+[feature/payments 355e9e3] Add payment logging
+ 1 file changed, 1 insertion(+)
+ create mode 100644 payment-logging.txt
+> git -C <repo> stash push -m "WIP payment cart"
+Saved working directory and index state On feature/payments: WIP payment cart
+> git -C <repo> switch -c hotfix/critical main
+Switched to a new branch 'hotfix/critical'
+> git -C <repo> add payment.txt hotfix.txt
+> git -C <repo> commit -m "Fix critical payment validation"
+[hotfix/critical 760ed56] Fix critical payment validation
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+ create mode 100644 hotfix.txt
+> git -C <repo> switch main
+Your branch is up to date with 'origin/main'.
+Switched to branch 'main'
+> git -C <repo> merge --no-ff hotfix/critical -m "Merge critical payment hotfix"
+Merge made by the 'ort' strategy.
+ hotfix.txt  | 1 +
+ payment.txt | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+ create mode 100644 hotfix.txt
+> git -C <repo> tag -a v1.0.1 -m "Release critical payment hotfix"
+> git -C <repo> switch feature/payments
+Switched to branch 'feature/payments'
+> git -C <repo> stash pop
+On branch feature/payments
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   cart.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Dropped refs/stash@{0} (97a2a4e54cba570035a74b5ae5c623ed9c306727)
+Stash restored before rebase; git status:
+> git -C <repo> status --short --branch
+## feature/payments
+ M cart.txt
+> git -C <repo> rebase --autostash main
+Created autostash: 926bf40
+Auto-merging payment.txt
+CONFLICT (content): Merge conflict in payment.txt
+Rebasing (1/3)
+Rebasing (2/3)
+error: could not apply 4f43954... Use Stripe provider
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply 4f43954... Use Stripe provider
+Rebase conflict state:
+> git -C <repo> status --short
+UU payment.txt
+<<<<<<< HEAD
+Provider: secure-gateway
+=======
+Provider: stripe
+>>>>>>> 4f43954 (Use Stripe provider)
+> git -C <repo> add payment.txt
+> git -C <repo> rebase --continue
+[detached HEAD 3611446] Use Stripe provider
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Rebasing (3/3)
+Applied autostash.
+Successfully rebased and updated refs/heads/feature/payments.
+Rebase completed; autostash restoration state:
+> git -C <repo> status --short --branch
+## feature/payments
+ M cart.txt
+Cart: saves payment token
+> git -C <repo> add -- cart.txt
+> git -C <repo> commit -m "Save cart payment token"
+[feature/payments e9058cd] Save cart payment token
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+> git -C <repo> rebase -i HEAD~4
+Rebasing (2/5)
+Rebasing (3/5)
+Rebasing (4/5)
+Rebasing (5/5)
+Executing: git commit --amend -m "Add payments flow"
+[detached HEAD fe9dd06] Add payments flow
+ Date: Wed Nov 18 14:15:59 2026 -0600
+ 4 files changed, 4 insertions(+), 2 deletions(-)
+ create mode 100644 payment-logging.txt
+ create mode 100644 payment-plan.txt
+Successfully rebased and updated refs/heads/feature/payments.
+Squashed payment branch history:
+> git -C <repo> log --oneline --graph --all
+* fe9dd06 Add payments flow
+*   9d49ada Merge critical payment hotfix
+|\  
+| * 760ed56 Fix critical payment validation
+|/  
+* 0c52441 Add payment and cart baseline
+* 02da78f Start payment release
+> git -C <repo> switch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+Switched to branch 'main'
+> git -C <repo> merge --no-ff feature/payments -m "Merge payments release"
+Merge made by the 'ort' strategy.
+ cart.txt            | 2 +-
+ payment-logging.txt | 1 +
+ payment-plan.txt    | 1 +
+ payment.txt         | 2 +-
+ 4 files changed, 4 insertions(+), 2 deletions(-)
+ create mode 100644 payment-logging.txt
+ create mode 100644 payment-plan.txt
+> git -C <repo> rev-parse HEAD
+8e7ce7939434c3042aa00de850af1bde2e4a0124
+Payments merge commit: 8e7ce7939434c3042aa00de850af1bde2e4a0124
+> git -C <repo> push origin main --tags
+To C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task10\server.git
+   0c52441..8e7ce79  main -> main
+ * [new tag]         v1.0.1 -> v1.0.1
+> git -C <repo> revert -m 1 --no-edit 8e7ce7939434c3042aa00de850af1bde2e4a0124
+[main 631e725] Revert "Merge payments release"
+ Date: Wed Nov 18 14:16:06 2026 -0600
+ 4 files changed, 2 insertions(+), 4 deletions(-)
+ delete mode 100644 payment-logging.txt
+ delete mode 100644 payment-plan.txt
+> git -C <repo> push origin main --tags
+To C:\Users\James\Documents\Codex\2026-11-13\referenced-chatgpt-conversation-this-is-an\work\day5-scenarios-20261118\task10\server.git
+   8e7ce79..631e725  main -> main
+After reverting the broken feature merge:
+payment.txt: Provider: secure-gateway
+> git -C <repo> status --short --branch
+## main...origin/main
+> git -C <repo> log --oneline --graph --all
+* 631e725 Revert "Merge payments release"
+*   8e7ce79 Merge payments release
+|\  
+| * fe9dd06 Add payments flow
+|/  
+*   9d49ada Merge critical payment hotfix
+|\  
+| * 760ed56 Fix critical payment validation
+|/  
+* 0c52441 Add payment and cart baseline
+* 02da78f Start payment release
+Remote heads and tags:
+> git -C <repo> ls-remote --heads --tags origin
+631e7252b1f18b7d8900dc95bc3f150e07d7782f	refs/heads/main
+be71774e70cf747bfd66b22fc7ba8acd84441586	refs/tags/v1.0.1
+9d49adaa609ec59040cd746f123ae616888e6b1f	refs/tags/v1.0.1^{}
+
+==============================================================================
+Bonus questions - concise answers
+==============================================================================
+1. git fetch downloads objects and updates remote-tracking refs without changing the current branch; git pull fetches and then integrates the selected remote branch.
+2. Use git revert on shared history because it adds an inverse commit without rewriting commits other people may already have.
+3. Rebase rewrites commit IDs; rebasing shared commits can invalidate collaborators' branches and cause duplicate or conflicting histories.
+4. git reset --hard moves HEAD and resets the index and working tree, discarding uncommitted changes; git reflog records prior HEAD positions and can identify a commit to restore.
+5. git bisect performs a binary search through commit history using known good and bad points to find the first commit that introduced a bug.
