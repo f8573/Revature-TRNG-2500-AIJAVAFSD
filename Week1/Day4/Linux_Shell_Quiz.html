@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linux Essentials and Shell Scripting Quiz</title>
+<style>
+  :root {
+    --bg: #f3f5fb; --card: #ffffff; --ink: #1e2350; --muted: #5b6285; --line: #dce1f0;
+    --navy: #12163f; --teal: #0b7f69; --tealbg: #e7f8f3; --good: #0b7f4d; --goodbg: #e3f7ec;
+    --bad: #b3261e; --badbg: #fdeceb; --code: #eef1fa; --accent: #4b3aa8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1030; --card: #161a47; --ink: #e8eaff; --muted: #a9b0d8; --line: #2b3068;
+      --navy: #ffffff; --teal: #3fd6b4; --tealbg: #12354a; --good: #5fe3a1; --goodbg: #123a2c;
+      --bad: #ff8a80; --badbg: #44181d; --code: #0c1033; --accent: #9d8cff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 Calibri, "Segoe UI", Arial, sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-family: Cambria, Georgia, serif; color: var(--navy); font-size: 30px; margin: 8px 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 18px; }
+  code { font-family: "Courier New", monospace; background: var(--code); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+  .score { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0 12px; }
+  .score-in { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; text-align: center; }
+  .stat b { display: block; font-size: 22px; color: var(--navy); }
+  .stat span { font-size: 12px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  .stat.good b { color: var(--good); } .stat.bad b { color: var(--bad); }
+  .bar { height: 8px; background: var(--line); border-radius: 99px; margin-top: 10px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--teal); transition: width .3s; }
+  .tabs { display: flex; gap: 8px; margin: 6px 0 14px; flex-wrap: wrap; }
+  .tab { border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 6px 14px; border-radius: 99px; cursor: pointer; font: inherit; }
+  .tab[aria-pressed="true"] { background: var(--teal); color: #fff; border-color: var(--teal); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tab[aria-pressed="true"] { color: #06231c; } }
+  .q { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 14px; margin: 0 0 16px; }
+  .q.right { border-color: var(--good); } .q.wrong { border-color: var(--bad); }
+  .qhead { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .num { background: var(--teal); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
+  .tag { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--teal); font-weight: 700; }
+  .qt { font-size: 17px; font-weight: 600; margin: 0 0 10px; }
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; cursor: pointer; }
+  .opt:hover { border-color: var(--accent); }
+  .opt input { margin-top: 5px; accent-color: var(--teal); }
+  .opt.locked { cursor: default; }
+  .opt.correct { background: var(--goodbg); border-color: var(--good); }
+  .opt.incorrect { background: var(--badbg); border-color: var(--bad); }
+  .row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  button.btn { background: var(--teal); color: #fff; border: 0; padding: 9px 18px; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) button.btn { color: #06231c; } }
+  button.btn.alt { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  button.btn:disabled { opacity: .45; cursor: not-allowed; }
+  .verdict { font-weight: 700; }
+  .verdict.right { color: var(--good); } .verdict.wrong { color: var(--bad); } .verdict.skip { color: var(--muted); }
+  .sol { margin-top: 12px; background: var(--tealbg); border-radius: 10px; padding: 10px 14px; }
+  .sol b { color: var(--teal); }
+  .final { background: var(--card); border: 2px solid var(--teal); border-radius: 14px; padding: 20px; margin: 0 0 18px; display: none; }
+  .final h2 { margin: 0 0 8px; font-family: Cambria, Georgia, serif; color: var(--navy); }
+  .final .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+  .final .big { font-size: 40px; font-weight: 700; color: var(--teal); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  @media (max-width: 560px) { .score-in { grid-template-columns: repeat(3, 1fr); } .final .grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Linux Essentials and Shell Scripting Quiz</h1>
+  <p class="sub">Pick one answer for each question. Use <b>Submit answer</b> to check a question and see its solution, or <b>Submit quiz</b> at the end to grade everything.</p>
+
+  <div class="score">
+    <div class="score-in">
+      <div class="stat"><b id="sTotal">0</b><span>Total</span></div>
+      <div class="stat"><b id="sAns">0</b><span>Answered</span></div>
+      <div class="stat good"><b id="sRight">0</b><span>Right</span></div>
+      <div class="stat bad"><b id="sWrong">0</b><span>Wrong</span></div>
+      <div class="stat"><b id="sLeft">0</b><span>Unanswered</span></div>
+    </div>
+    <div class="bar"><i id="bar"></i></div>
+  </div>
+
+  <div class="final" id="final" role="status" aria-live="polite">
+    <h2>Quiz result</h2>
+    <div class="big" id="fScore"></div>
+    <div class="grid">
+      <div class="stat"><b id="fTotal"></b><span>Total questions</span></div>
+      <div class="stat good"><b id="fRight"></b><span>Right</span></div>
+      <div class="stat bad"><b id="fWrong"></b><span>Wrong</span></div>
+      <div class="stat"><b id="fSkip"></b><span>Unanswered</span></div>
+    </div>
+    <div id="fMsg"></div>
+    <div class="actions"><button class="btn" id="retake">Retake quiz</button></div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab" data-f="All" aria-pressed="true">All</button>
+    <button class="tab" data-f="Linux" aria-pressed="false">Linux essentials</button>
+    <button class="tab" data-f="Shell" aria-pressed="false">Shell scripting</button>
+  </div>
+
+  <div id="quiz"></div>
+
+  <div class="actions">
+    <button class="btn" id="submitAll">Submit quiz</button>
+    <button class="btn alt" id="reset">Reset</button>
+  </div>
+</div>
+
+<script>
+// Each entry: category, question, correct answer FIRST, three wrong answers, explanation.
+// Options are shuffled every time the page loads. Backticks mark code.
+var DATA = [
+ ['Linux','Which command prints the directory you are currently in?','pwd','cd','ls','whoami','`pwd` (print working directory) shows the absolute path of the current directory.'],
+ ['Linux','Which layer of Unix acts as the bridge between software and hardware?','The kernel','The shell','The application program','The file system','The kernel manages CPU, memory, I/O and networking, and programs reach hardware only through it.'],
+ ['Linux','Which directory holds system configuration files?','/etc','/bin','/tmp','/proc','`/etc` contains configuration files such as passwd, group and ssh settings.'],
+ ['Linux','What does `cd ~` do?','Moves to your home directory','Moves to the root directory','Moves to the parent directory','Moves to the previous directory','`~` is shorthand for your home directory. `/` is root, `..` is the parent, and `-` is the previous directory.'],
+ ['Linux','Which option makes `ls` show hidden files?','-a','-l','-h','-R','`ls -a` lists all entries including names that start with a dot, plus `.` and `..`.'],
+ ['Linux','In the output of `ls -l`, what does a leading `d` mean?','The entry is a directory','The entry is a device file','The entry is deleted','The entry is a data file','The first character is the type: `-` file, `d` directory, `l` symbolic link.'],
+ ['Linux','Which command shows your UID, GID and group memberships?','id','whoami','groups','passwd','`id` prints uid, gid and all groups. `whoami` prints only the user name.'],
+ ['Linux','For the permission string `-rwxr-xr--`, what can the group do?','Read and execute','Read and write','Read only','Read, write and execute','The three blocks are user `rwx`, group `r-x`, others `r--`. The group has read and execute.'],
+ ['Linux','What permissions does `chmod 755 file.sh` set?','rwxr-xr-x','rwxrwxrwx','rw-r--r--','rwx------','7 = rwx for the user, 5 = r-x for the group, 5 = r-x for others.'],
+ ['Linux','What does `chmod u+x file.sh` do?','Adds execute permission for the owner','Adds execute permission for everyone','Removes execute permission from the owner','Changes the owner to user x','`u` is the owner, `+` adds, `x` is execute.'],
+ ['Linux','Which command changes the owner of a file?','chown','chmod','chgrp','passwd','`chown user file` changes the owner. `chgrp` changes the group and `chmod` changes permissions.'],
+ ['Linux','Which file stores the encrypted user passwords?','/etc/shadow','/etc/passwd','/etc/group','/home/passwords','`/etc/shadow` holds password hashes and is readable only by root. `/etc/passwd` holds account details.'],
+ ['Linux','Which command adds user `ravi` to the group `dev` without removing other groups?','sudo usermod -aG dev ravi','sudo usermod -G dev ravi','sudo groupadd dev ravi','sudo chgrp dev ravi','`-a` appends. Without it, `-G` replaces all supplementary groups.'],
+ ['Linux','In Unix, `/dev/sda` is an example of which file type?','A device file','An ordinary file','A directory file','A shell script','Device files represent hardware such as disks. This reflects the idea that everything is a file.'],
+ ['Linux','Which command finds all `.log` files under `/var/log`?','find /var/log -type f -name "*.log"','locate /var/log *.log -type f','grep -r .log /var/log -name','ls /var/log -find *.log','`find path -type f -name pattern` walks the tree and prints matching files.'],
+ ['Linux','Which command prints the first 10 lines of a file by default?','head','tail','cat','less','`head` shows the start of a file (10 lines by default); `tail` shows the end.'],
+ ['Linux','What does `tail -f app.log` do?','Follows the file and prints new lines as they are added','Prints the first lines of the file','Deletes the last line of the file','Prints the file in reverse','`-f` means follow. It is the standard way to watch a log grow.'],
+ ['Linux','What does `grep -i "error" log.txt` do?','Searches ignoring upper/lower case','Prints lines that do not match','Counts matching lines','Searches in all sub-directories','`-i` ignores case. `-v` inverts, `-c` counts, `-r` is recursive.'],
+ ['Linux','Why do you usually run `sort names.txt | uniq` instead of only `uniq names.txt`?','uniq removes only adjacent duplicate lines','uniq cannot read files','sort converts the file to upper case','uniq needs root permission','`uniq` compares neighbouring lines, so duplicates must be grouped by `sort` first.'],
+ ['Linux','Which command counts the lines in a file?','wc -l file','wc -w file','wc -c file','count file','`-l` lines, `-w` words, `-c` bytes.'],
+ ['Linux','What does `cut -d"," -f1 data.csv` print?','The first comma-separated field of each line','The first character of each line','Only the first line of the file','The first column sorted','`-d` sets the delimiter and `-f1` selects field number 1.'],
+ ['Linux','What does `sed \'s/foo/bar/g\' notes.txt` do by default?','Prints the text with foo replaced by bar, leaving the file unchanged','Replaces foo with bar inside the file','Deletes every line containing foo','Counts how many times foo appears','`sed` prints the edited stream. The file changes only with `-i`.'],
+ ['Linux','Which signal does `kill -9 1234` send?','SIGKILL (force kill)','SIGTERM (polite stop)','SIGSTOP (pause)','SIGHUP (reload)','`-9` is SIGKILL: it cannot be ignored. Plain `kill` sends SIGTERM (15).'],
+ ['Linux','You press Ctrl+Z on a running job and then type `bg %1`. What happens?','The job resumes running in the background','The job is killed','The job moves to the foreground','The job is deleted from the list','Ctrl+Z suspends the job; `bg` resumes it in the background; `fg` brings it to the front.'],
+ ['Linux','Which command shows a live, refreshing view of processes and resource use?','top','ps','jobs','kill','`top` is interactive and refreshes. `ps` is a one-time snapshot.'],
+ ['Linux','What does `ping -c 3 google.com` do?','Sends exactly 3 packets and stops','Pings for 3 minutes','Pings 3 hosts','Waits 3 seconds between pings forever','`-c` is the count of packets to send.'],
+ ['Linux','What does `netstat -tuln` display?','Listening TCP and UDP ports in numeric form','All files opened by the user','The routing table only','Packets lost on the network','t = TCP, u = UDP, l = listening, n = numeric addresses.'],
+ ['Linux','Which command copies a file securely to another machine over SSH?','scp','curl','ping','cp','`scp file user@host:/path` copies over an encrypted SSH connection.'],
+ ['Linux','What is the difference between `>` and `>>`?','`>` overwrites the file, `>>` appends to it','`>` appends, `>>` overwrites','`>` redirects errors, `>>` redirects output','They are identical','`cmd > file` truncates the file first; `cmd >> file` adds to the end.'],
+ ['Linux','Why is `locate passwd` usually faster than `find / -name passwd`?','locate searches a pre-built database','locate only searches /etc','locate skips file names','locate uses the kernel directly','`locate` queries an index refreshed by `updatedb`, while `find` walks the disk live.'],
+ ['Shell','What is the purpose of the first line `#!/bin/bash` in a script?','It tells the system to run the script with bash','It is a comment that is ignored by everything','It makes the file executable','It imports the bash library','The shebang names the interpreter. `chmod +x` is what makes the file executable.'],
+ ['Shell','Which line correctly assigns a value to a variable in bash?','name="Ashu"','name = "Ashu"','$name="Ashu"','set name -> "Ashu"','There must be no spaces around `=`, and no `$` on the left side.'],
+ ['Shell','What does `$#` contain inside a script?','The number of command-line arguments','The name of the script','The process ID of the script','The exit status of the last command','`$0` is the script name, `$1`..`$9` are arguments, `$#` is the count, `$?` is the last exit status.'],
+ ['Shell','What does `$?` hold right after a command finishes?','The exit status of that command','The number of arguments','The last argument','The PID of the command','`0` means success; any other value means failure.'],
+ ['Shell','Which command asks the user to type a value and stores it in a variable?','read -p "Name: " name','input name','echo -r name','get "Name: " name','`read -p` shows a prompt and stores the typed text.'],
+ ['Shell','Which keyword closes an `if` block in bash?','fi','end','endif','done','`if ... then ... fi` (if backwards). `done` closes loops and `esac` closes `case`.'],
+ ['Shell','Which test checks that number `a` is greater than number `b` inside `[ ]`?','[ $a -gt $b ]','[ $a > $b ]','[ $a gt $b ]','[ $a -more $b ]','Numeric tests use `-gt -ge -lt -le -eq -ne`. Inside `[ ]`, a bare `>` is treated as output redirection, not a comparison.'],
+ ['Shell','Which test is true when a string variable is empty?','[ -z "$s" ]','[ -n "$s" ]','[ -e "$s" ]','[ -d "$s" ]','`-z` is true for an empty string; `-n` is true for a non-empty one.'],
+ ['Shell','What does `for i in {1..5}; do echo $i; done` print?','The numbers 1 to 5, one per line','Only the number 5','The text {1..5}','The numbers 0 to 4','Brace expansion `{1..5}` generates 1 2 3 4 5.'],
+ ['Shell','A `while [ $count -le 5 ]` loop never ends. What is the most likely cause?','count is never incremented inside the loop','The loop needs a do keyword','The condition must use -lt','while loops stop after 5 iterations anyway','Something inside the loop must change the condition, for example `count=$((count+1))`.'],
+ ['Shell','What does `break` do inside a loop?','Leaves the loop immediately','Skips to the next iteration','Pauses the loop for one second','Restarts the loop','`break` exits the loop; `continue` skips to the next iteration.'],
+ ['Shell','In a `case` statement, how does each branch end?','With ;;','With fi','With break;','With end','Each pattern branch ends with `;;` and the whole block ends with `esac`.'],
+ ['Shell','What does `today=$(date +%F)` do?','Stores the output of the date command in today','Stores the literal text $(date +%F)','Runs date in the background','Creates a file called today','`$( )` is command substitution: the command runs and its output replaces the expression.'],
+ ['Shell','Which is a valid function definition in bash?','greet() { echo "Hi $1"; }','function greet: echo Hi','def greet(): echo Hi','greet => echo "Hi $1"','`name() { commands; }` defines a function; call it with `greet Ashu`.'],
+ ['Shell','You run `./hello.sh` and get "Permission denied". What is the fix?','chmod +x hello.sh','sudo rm hello.sh','mv hello.sh hello','bash -n hello.sh','The file lacks execute permission. `chmod +x` adds it. (`bash hello.sh` would also work.)'],
+ ['Shell','Which spacing is required when writing a test in bash?','[ $a -eq 5 ]  (spaces inside the brackets)','[$a -eq 5]','[ $a-eq5 ]','[$a-eq 5 ]','`[` is a command and `]` is its last argument, so they need surrounding spaces.'],
+ ['Shell','What does `echo $(( 3 * 4 ))` print?','12','3 * 4','34','Error: bash cannot calculate','`$(( ))` performs integer arithmetic.'],
+ ['Shell','What does `exit 1` at the end of a script signal?','The script failed','The script succeeded','The script was run once','The script is waiting for input','Exit code 0 means success; non-zero means failure.'],
+ ['Shell','Which command traces every line of a script as it runs, to help debugging?','bash -x script.sh','bash -n script.sh','bash -c script.sh','bash -v -n','`-x` prints each command after expansion. `-n` only checks syntax without running.'],
+ ['Shell','What does `$@` represent in a script?','All the arguments passed to the script','The script name','The number of arguments','The last exit status','`$@` expands to every positional argument; `$#` is how many there are.']
+];
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function md(s){ return esc(s).replace(/`([^`]+)`/g,'<code>$1</code>'); }
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+var Q = [], filter = 'All', finished = false;
+function load(){
+  finished = false;
+  Q = DATA.map(function(d,i){
+    var opts = shuffle([d[2],d[3],d[4],d[5]].map(function(t,k){ return {t:t, ok:k===0}; }));
+    return { id:i, cat:d[0], q:d[1], opts:opts, exp:d[6], pick:-1, done:false };
+  });
+  document.getElementById('final').style.display = 'none';
+  render();
+}
+function counts(){
+  var r=0,w=0,a=0;
+  Q.forEach(function(q){ if(q.done && q.pick>=0){ a++; if(q.opts[q.pick] && q.opts[q.pick].ok) r++; else w++; } });
+  return {r:r,w:w,a:a,t:Q.length};
+}
+function updateScore(){
+  var c = counts();
+  document.getElementById('sTotal').textContent = c.t;
+  document.getElementById('sAns').textContent = c.a;
+  document.getElementById('sRight').textContent = c.r;
+  document.getElementById('sWrong').textContent = c.w;
+  document.getElementById('sLeft').textContent = c.t - c.a;
+  document.getElementById('bar').style.width = (100*c.a/c.t) + '%';
+}
+function render(){
+  var host = document.getElementById('quiz'); host.innerHTML = '';
+  var n = 0;
+  Q.forEach(function(q){
+    n++;
+    if(filter!=='All' && q.cat!==filter) return;
+    var card = document.createElement('div'); card.className = 'q'; card.id = 'q'+q.id;
+    var correct = q.done && q.opts[q.pick] && q.opts[q.pick].ok;
+    if(q.done) card.className += correct ? ' right' : (q.pick>=0 ? ' wrong' : '');
+    var h = '<div class="qhead"><span class="num">'+(q.id+1)+'</span><span class="tag">'+(q.cat==='Linux'?'Linux essentials':'Shell scripting')+'</span></div>';
+    h += '<p class="qt">'+md(q.q)+'</p><div class="opts">';
+    q.opts.forEach(function(o,k){
+      var cls = 'opt'; if(q.done){ cls += ' locked'; if(o.ok) cls += ' correct'; else if(k===q.pick) cls += ' incorrect'; }
+      h += '<label class="'+cls+'"><input type="radio" name="r'+q.id+'" value="'+k+'"'+(q.pick===k?' checked':'')+(q.done?' disabled':'')+'><span>'+md(o.t)+'</span></label>';
+    });
+    h += '</div><div class="row">';
+    if(!q.done) h += '<button class="btn" data-sub="'+q.id+'">Submit answer</button>';
+    else if(q.pick<0) h += '<span class="verdict skip">Not answered</span>';
+    else h += '<span class="verdict '+(correct?'right':'wrong')+'">'+(correct?'Right':'Wrong')+'</span>';
+    h += '</div>';
+    if(q.done){
+      var ans = q.opts.filter(function(o){return o.ok;})[0].t;
+      h += '<div class="sol"><b>Solution:</b> '+md(ans)+'<br>'+md(q.exp)+'</div>';
+    }
+    card.innerHTML = h; host.appendChild(card);
+  });
+  updateScore();
+}
+document.getElementById('quiz').addEventListener('change', function(e){
+  if(e.target.type==='radio'){ var id = +e.target.name.slice(1); Q[id].pick = +e.target.value; }
+});
+document.getElementById('quiz').addEventListener('click', function(e){
+  var id = e.target.getAttribute && e.target.getAttribute('data-sub');
+  if(id===null || id===undefined) return;
+  var q = Q[+id];
+  if(q.pick<0){ alert('Please choose an option first.'); return; }
+  q.done = true; render();
+  var el = document.getElementById('q'+q.id); if(el) el.scrollIntoView({block:'nearest'});
+});
+document.getElementById('tabs').addEventListener('click', function(e){
+  var f = e.target.getAttribute('data-f'); if(!f) return;
+  filter = f;
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-f')===f ? 'true':'false'); });
+  render();
+});
+document.getElementById('submitAll').addEventListener('click', function(){
+  Q.forEach(function(q){ q.done = true; });
+  render();
+  var c = counts(), skipped = Q.filter(function(q){return q.pick<0;}).length;
+  var right = c.r, wrong = c.w, pct = Math.round(100*right/c.t);
+  document.getElementById('fScore').textContent = right+' / '+c.t+'  ('+pct+'%)';
+  document.getElementById('fTotal').textContent = c.t;
+  document.getElementById('fRight').textContent = right;
+  document.getElementById('fWrong').textContent = wrong;
+  document.getElementById('fSkip').textContent = skipped;
+  document.getElementById('fMsg').textContent = pct>=80 ? 'Excellent work! You have a strong grip on Linux and shell scripting.' : pct>=60 ? 'Good job. Review the solutions below for the ones you missed.' : 'Keep practising. Read each solution below, then try the quiz again.';
+  var f = document.getElementById('final'); f.style.display = 'block'; f.scrollIntoView({behavior:'smooth', block:'start'});
+});
+document.getElementById('reset').addEventListener('click', function(){ if(confirm('Reset all answers?')){ load(); window.scrollTo(0,0); } });
+document.getElementById('retake').addEventListener('click', function(){ load(); window.scrollTo(0,0); });
+load();
+</script>
+</body>
+</html>
