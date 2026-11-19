@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git &amp; GitHub MCQ Quiz</title>
+<style>
+  :root{
+    --bg1:#16428a; --bg2:#1e1e64; --bg3:#4c38a8;
+    --card:rgba(255,255,255,.08); --card-line:rgba(255,255,255,.18);
+    --text:#ffffff; --muted:#c9c3f5; --teal:#3dd6b0; --violet:#8b7cf6; --amber:#f2b84b;
+    --good:#2fd39b; --bad:#ff6b6b; --ink:#0b1033;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family:Calibri,"Segoe UI",system-ui,sans-serif; color:var(--text);
+    background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 45%,var(--bg3) 100%) fixed;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .app{width:100%; max-width:820px}
+  h1,h2{font-family:Cambria,Georgia,serif; margin:0}
+  .screen{display:none; animation:fade .25s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .panel{background:var(--card); border:1px solid var(--card-line); border-radius:18px; padding:32px}
+  .kicker{color:var(--teal); font-weight:700; letter-spacing:.2em; font-size:12px; text-transform:uppercase}
+  .big-num{font-family:Cambria,serif; font-size:72px; font-weight:700; color:var(--teal); line-height:1}
+  .title{font-size:40px; line-height:1.15; margin:8px 0 14px}
+  .lead{color:var(--muted); font-size:18px; margin:0 0 22px}
+  .chips{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:26px}
+  .chip{background:rgba(255,255,255,.1); border:1px solid var(--card-line); border-radius:999px; padding:6px 14px; font-size:14px}
+  .chip b{color:var(--teal)}
+  button{font:inherit; cursor:pointer}
+  .btn{
+    border:0; border-radius:999px; padding:13px 28px; font-weight:700; font-size:16px;
+    background:var(--teal); color:var(--ink); transition:transform .1s, opacity .2s, filter .2s;
+  }
+  .btn:hover:not(:disabled){filter:brightness(1.08)} .btn:active:not(:disabled){transform:scale(.97)}
+  .btn:disabled{opacity:.4; cursor:not-allowed}
+  .btn.ghost{background:transparent; color:var(--text); border:1px solid var(--card-line)}
+  .btn:focus-visible,.opt:focus-visible{outline:3px solid var(--amber); outline-offset:2px}
+
+  /* quiz */
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:15px; color:var(--muted)}
+  .topbar b{color:var(--text)}
+  .bar{height:8px; background:rgba(255,255,255,.14); border-radius:99px; overflow:hidden; margin-bottom:22px}
+  .bar i{display:block; height:100%; width:0; background:var(--teal); border-radius:99px; transition:width .3s}
+  .badge{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:5px 12px; border-radius:99px; margin-bottom:14px; color:var(--ink)}
+  .badge.Basic{background:var(--teal)} .badge.Scenario{background:var(--violet)} .badge.Tricky{background:var(--amber)}
+  .q{font-family:Cambria,Georgia,serif; font-size:26px; line-height:1.3; margin:0 0 22px}
+  code{font-family:"Courier New",monospace; background:rgba(11,16,51,.55); color:var(--teal); padding:1px 7px; border-radius:6px; font-size:.9em}
+  .opts{display:grid; gap:12px}
+  .opt{
+    display:flex; gap:14px; align-items:flex-start; text-align:left; width:100%;
+    background:rgba(255,255,255,.07); color:var(--text); border:2px solid var(--card-line);
+    border-radius:14px; padding:14px 16px; font-size:17px; line-height:1.4; transition:background .15s,border-color .15s;
+  }
+  .opt:hover:not(:disabled){background:rgba(255,255,255,.13)}
+  .opt .k{flex:0 0 30px; height:30px; border-radius:50%; background:rgba(255,255,255,.15); display:grid; place-items:center; font-weight:700; font-size:14px}
+  .opt.sel{border-color:var(--teal); background:rgba(61,214,176,.14)}
+  .opt.sel .k{background:var(--teal); color:var(--ink)}
+  .opt.right{border-color:var(--good); background:rgba(47,211,155,.2)}
+  .opt.right .k{background:var(--good); color:var(--ink)}
+  .opt.wrong{border-color:var(--bad); background:rgba(255,107,107,.2)}
+  .opt.wrong .k{background:var(--bad); color:var(--ink)}
+  .opt:disabled{cursor:default}
+  .opt.dim{opacity:.6}
+  .feedback{margin-top:20px; border-radius:14px; padding:16px 18px; display:none; background:rgba(11,16,51,.45); border:1px solid var(--card-line)}
+  .feedback.show{display:block; animation:fade .25s}
+  .feedback h3{margin:0 0 6px; font-size:18px}
+  .feedback.ok h3{color:var(--good)} .feedback.no h3{color:var(--bad)}
+  .feedback p{margin:0; color:var(--muted); font-size:16px; line-height:1.5}
+  .actions{display:flex; justify-content:space-between; align-items:center; margin-top:24px; gap:12px; flex-wrap:wrap}
+  .hint{color:var(--muted); font-size:13px}
+
+  /* results */
+  .score-ring{width:170px; height:170px; border-radius:50%; display:grid; place-items:center; margin:6px auto 12px;
+    background:conic-gradient(var(--teal) calc(var(--p)*1%), rgba(255,255,255,.14) 0)}
+  .score-ring div{width:134px; height:134px; border-radius:50%; background:#251f6e; display:grid; place-items:center; text-align:center}
+  .score-ring b{font-family:Cambria,serif; font-size:40px; display:block; line-height:1}
+  .score-ring span{color:var(--muted); font-size:14px}
+  .center{text-align:center}
+  .cats{display:grid; gap:12px; margin:22px 0}
+  .cat{display:grid; grid-template-columns:110px 1fr 60px; gap:12px; align-items:center; font-size:15px}
+  .cat .t{height:10px; background:rgba(255,255,255,.14); border-radius:99px; overflow:hidden}
+  .cat .t i{display:block; height:100%; background:var(--teal)}
+  .cat:nth-child(2) .t i{background:var(--violet)} .cat:nth-child(3) .t i{background:var(--amber)}
+  .review{margin-top:22px; display:grid; gap:10px; max-height:420px; overflow:auto; padding-right:4px}
+  .ritem{border:1px solid var(--card-line); border-radius:12px; padding:12px 14px; background:rgba(255,255,255,.05); font-size:15px}
+  .ritem .rq{font-weight:700; margin-bottom:6px}
+  .ritem .ya{color:var(--bad)} .ritem .ya.ok{color:var(--good)} .ritem .ca{color:var(--good)}
+  .rowbtns{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:10px}
+  @media (max-width:560px){
+    .panel{padding:22px} .title{font-size:30px} .q{font-size:22px} .cat{grid-template-columns:84px 1fr 52px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <!-- START -->
+  <section id="start" class="screen active">
+    <div class="panel">
+      <div class="big-num">50</div>
+      <h1 class="title">Git &amp; GitHub MCQ Quiz</h1>
+      <p class="lead">Git basics, real-world scenarios and tricky edge cases: commands, branching, merging, conflicts, undoing mistakes and pull requests.</p>
+      <div class="chips">
+        <span class="chip"><b>16</b> Basics</span>
+        <span class="chip"><b>20</b> Scenario based</span>
+        <span class="chip"><b>14</b> Tricky</span>
+        <span class="chip">One question per screen</span>
+      </div>
+      <p class="hint" style="margin:-8px 0 22px">Pick an answer, press Submit, then read the explanation. Keys: 1–4 select, Enter submits or continues. Options are shuffled each attempt.</p>
+      <button class="btn" id="startBtn">Start quiz</button>
+    </div>
+  </section>
+
+  <!-- QUESTION -->
+  <section id="quiz" class="screen">
+    <div class="panel">
+      <div class="topbar">
+        <span>Question <b id="qNum">1</b> of <b id="qTotal">50</b></span>
+        <span>Score <b id="liveScore">0</b> / <b id="answered">0</b> answered</span>
+      </div>
+      <div class="bar" role="progressbar" aria-label="Quiz progress"><i id="barFill"></i></div>
+      <span class="badge" id="badge">Basic</span>
+      <h2 class="q" id="qText"></h2>
+      <div class="opts" id="opts" role="radiogroup" aria-label="Answer options"></div>
+      <div class="feedback" id="fb" role="status" aria-live="polite"><h3 id="fbH"></h3><p id="fbP"></p></div>
+      <div class="actions">
+        <button class="btn ghost" id="quitBtn">End quiz</button>
+        <div>
+          <button class="btn" id="submitBtn" disabled>Submit answer</button>
+          <button class="btn" id="nextBtn" style="display:none">Next question</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="result" class="screen">
+    <div class="panel">
+      <div class="center">
+        <div class="kicker">Quiz complete</div>
+        <div class="score-ring" id="ring"><div><span><b id="rScore">0</b>of <span id="rTotal">50</span></span></div></div>
+        <h2 class="title" id="rMsg" style="font-size:30px;margin-bottom:4px"></h2>
+        <p class="lead" id="rSub"></p>
+      </div>
+      <div class="cats" id="cats"></div>
+      <div class="rowbtns">
+        <button class="btn" id="retryBtn">Retake quiz</button>
+        <button class="btn ghost" id="wrongBtn">Retry missed only</button>
+        <button class="btn ghost" id="toggleReview">Show answer review</button>
+      </div>
+      <div class="review" id="review" style="display:none"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* Each question: c=category, q=question, o=[correct, wrong, wrong, wrong], e=explanation.
+   Option order is shuffled at runtime. Backticks render as inline code. */
+const QUESTIONS = [
+/* ---------- BASICS (16) ---------- */
+{c:"Basic",q:"What type of version control system is Git?",o:["Distributed","Centralized","Cloud-only","File-locking"],e:"Git is distributed: every developer has the full repository and its history, so most work happens offline."},
+{c:"Basic",q:"What is the relationship between Git and GitHub?",o:["GitHub is a hosting service built around Git repositories","GitHub is the older name of Git","Git is a web service that GitHub installs locally","They are two names for the same command-line tool"],e:"Git is the local version control tool. GitHub hosts Git repositories online and adds collaboration features."},
+{c:"Basic",q:"Which command creates a new, empty local repository in the current folder?",o:["`git init`","`git clone`","`git start`","`git create`"],e:"`git init` turns the current folder into a Git repository by creating the hidden .git folder."},
+{c:"Basic",q:"Which command moves a file into the staging area (index)?",o:["`git add`","`git commit`","`git push`","`git stage-out`"],e:"`git add <file>` queues changes in the index so they will be part of the next commit."},
+{c:"Basic",q:"What does `git commit -m \"message\"` do?",o:["Records a snapshot of staged changes in the local history with a message","Uploads changes to the remote server","Creates a new branch named after the message","Shows the status of the working directory"],e:"A commit snapshots the staged files permanently in the local repository's history."},
+{c:"Basic",q:"Which command shows staged, unstaged and untracked files?",o:["`git status`","`git log`","`git diff --all`","`git show`"],e:"`git status` reports the state of the working directory and staging area. It doesn't show commit history."},
+{c:"Basic",q:"What does `git clone <URL>` do?",o:["Creates a local copy of an existing repository","Copies one branch into another","Duplicates the last commit","Uploads your repo to the URL"],e:"Clone downloads the repository and its history into a new local folder, and sets up origin."},
+{c:"Basic",q:"Which command displays the commit history?",o:["`git log`","`git history --list`","`git status`","`git branch`"],e:"`git log` shows commits; `git log -3` shows only the last three."},
+{c:"Basic",q:"The staging area in Git is also known as the:",o:["Index","Stash","HEAD","Origin"],e:"The index sits between the working directory and the repository and holds changes you plan to commit together."},
+{c:"Basic",q:"In Git, HEAD represents:",o:["The latest commit of the currently checked-out branch","The first commit ever made","The remote repository","The staging area"],e:"HEAD acts like a pointer to the current branch's tip. Checking out another branch moves HEAD."},
+{c:"Basic",q:"What does `git push` do?",o:["Transfers local commits to a remote repository","Downloads commits from the remote","Deletes the remote branch","Stages all files"],e:"Pushing exports your commits to a remote branch. It can overwrite remote work, so use it carefully."},
+{c:"Basic",q:"`git pull` is equivalent to:",o:["`git fetch` followed by `git merge`","`git clone` followed by `git push`","`git add` followed by `git commit`","`git fetch` followed by `git reset`"],e:"Pull downloads remote changes (fetch) and then integrates them into your current branch (merge)."},
+{c:"Basic",q:"Which command lists the branches in a repository?",o:["`git branch`","`git list`","`git show-branches --none`","`git checkout`"],e:"`git branch` lists local branches; `git branch -a` includes remote-tracking branches."},
+{c:"Basic",q:"Who originally developed Git, and for what project?",o:["Linus Torvalds, for the Linux kernel","CollabNet, for Subversion","Vincent Driessen, for GitHub","Microsoft, for Windows"],e:"Linus Torvalds created Git for Linux kernel development. CollabNet created SVN."},
+{c:"Basic",q:"In a cloned repository, what is `origin`?",o:["The default short name for the remote repo you cloned from","The very first commit","The default local branch","The name of the staging area"],e:"Origin is an alias for the remote URL, so you can type `origin` instead of the full address."},
+{c:"Basic",q:"Which setting does `git config --global user.email` define?",o:["The email address stamped on every commit you author","Your GitHub login password","The remote repository address","The email that receives pull request alerts"],e:"user.name and user.email identify the author of each commit. They are not credentials."},
+
+/* ---------- SCENARIO BASED (20) ---------- */
+{c:"Scenario",q:"You are asked to build a login page. You want to create a branch called `login-page` and switch to it in one command. Which works?",o:["`git checkout -b login-page`","`git branch login-page --switch-off`","`git new login-page`","`git push -b login-page`"],e:"`git checkout -b` (or the newer `git switch -c`) creates the branch and checks it out in one step."},
+{c:"Scenario",q:"You are mid-way through editing the checkout flow when your manager asks for an urgent look at another branch. You don't want to commit half-done work. What do you do?",o:["Run `git stash`, switch branches, and later `git stash pop`","Run `git revert HEAD`","Run `git rm` on the changed files","Run `git tag wip`"],e:"`git stash` saves uncommitted work aside so the working tree is clean, and `git stash pop` brings it back."},
+{c:"Scenario",q:"You built an `inventory-app` locally, committed, and linked a brand-new empty GitHub repo as origin. How do you publish the `main` branch and set its upstream?",o:["`git push -u origin main`","`git pull origin main`","`git clone origin main`","`git merge origin main`"],e:"`-u` (set-upstream) links local main to origin/main, so later `git push` and `git pull` need no arguments."},
+{c:"Scenario",q:"A teammate pushed new commits to `release-2.0`. You are already on that branch locally. How do you bring their work in?",o:["`git pull`","`git push`","`git init`","`git stash`"],e:"Pull fetches the new remote commits and merges them into your current branch."},
+{c:"Scenario",q:"Your `search-bar` branch is merged and no longer needed. How do you delete it from your LOCAL repo?",o:["`git branch -d search-bar`","`git push -d search-bar`","`git rm search-bar`","`git clone -d search-bar`"],e:"`git branch -d` deletes a local branch, and refuses if it holds unmerged work."},
+{c:"Scenario",q:"After deleting `search-bar` locally, the branch still shows up on GitHub. How do you remove it there?",o:["`git push origin --delete search-bar`","`git branch -d origin/search-bar`","`git fetch --delete search-bar`","Nothing; remote branches vanish automatically"],e:"Deleting locally never touches the remote. Use `git push origin --delete <branch>`."},
+{c:"Scenario",q:"A useful bug fix, commit `a1b2c3d`, sits on your `experiment` branch. You need only that commit on `main`, not the rest of the experiment. Which command?",o:["`git cherry-pick a1b2c3d` while on main","`git merge experiment`","`git stash apply a1b2c3d`","`git tag a1b2c3d`"],e:"Cherry-pick applies one specific commit onto the current branch without merging everything else."},
+{c:"Scenario",q:"A commit that breaks pricing was already pushed to the shared `main` branch and teammates have pulled it. How do you undo it safely?",o:["`git revert <commit>` and push the new commit","`git reset --hard <commit>` and force push","`git rm <commit>`","Delete the repo and re-create it"],e:"Revert adds a new commit that cancels the bad one, so teammates' history stays intact."},
+{c:"Scenario",q:"You changed `pricing.js` but haven't staged it. Which command shows exactly which lines changed?",o:["`git diff`","`git status --lines`","`git push --preview`","`git show --staged`"],e:"`git diff` compares the working tree with the index. Add `--staged` to see what is already staged."},
+{c:"Scenario",q:"You found a bug in an open-source library called `chart-lite` where you have no write access. What is the standard way to contribute a fix?",o:["Fork it, fix on a branch, then open a pull request","Push straight to their main branch","Email them your .git folder","Clone it and force push"],e:"A fork gives you your own copy. Push the fix there, then send a pull request to the owner."},
+{c:"Scenario",q:"The payment API in production is broken while you are half-way through a `wishlist` feature. What is the recommended hotfix approach?",o:["Switch to the production branch, create a hotfix branch, test, merge and deploy, then return to wishlist","Finish wishlist first, then fix production","Commit the hotfix on the wishlist branch and release that","Delete the production branch and rebuild it"],e:"Isolate the fix on its own branch off production, ship it, then resume your original work."},
+{c:"Scenario",q:"Your project creates `node_modules/` and `.env` files that must never be committed. What is the right approach?",o:["List them in a `.gitignore` file before the first commit","Run `git rm` on them before every commit","Rename the folders with a dot","Set `git config ignore true`"],e:"`.gitignore` tells Git to leave matching untracked files alone."},
+{c:"Scenario",q:"You made four commits all named \"WIP\" and want one tidy commit before opening a pull request. Which command fits?",o:["`git rebase -i HEAD~4` and squash","`git merge --combine 4`","`git stash 4`","`git tag -m 4`"],e:"Interactive rebase lets you squash several commits into a single clean commit."},
+{c:"Scenario",q:"`git push` is rejected because the remote has commits you don't have locally. What is the sensible first step?",o:["Pull the remote changes, resolve anything needed, then push again","Force push to overwrite the remote","Delete your local repo","Run `git init` again"],e:"Integrate the remote work first. Force pushing would erase your teammates' commits."},
+{c:"Scenario",q:"You run `git merge` and Git reports \"CONFLICT\" in `config.yaml`, because you and a teammate edited the same line. What is the correct next step?",o:["Edit the file to resolve the conflict markers, then `git add` it and commit","Run `git push --force` immediately","Delete the .git folder","Run `git init` to reset the merge"],e:"Fix the file by choosing the final text, remove the markers, stage it, then commit to finish the merge."},
+{c:"Scenario",q:"You just committed locally (not pushed) and noticed the commit includes `.env` with passwords. You want it out of the commit but still on your disk. What is the best approach?",o:["`git rm --cached .env`, add it to .gitignore, then `git commit --amend`","`git push` and delete it on GitHub","`git stash drop`","`git tag --remove .env`"],e:"`--cached` untracks the file without deleting it, and `--amend` rewrites the unpushed commit. If it had been pushed, you would also need to rotate the passwords."},
+{c:"Scenario",q:"Production shows a strange value and you want to find out who last changed line 42 of `tax.py`, and in which commit. Which command helps?",o:["`git blame tax.py`","`git status tax.py`","`git tag tax.py`","`git remote tax.py`"],e:"`git blame` annotates each line with the commit and author that last modified it."},
+{c:"Scenario",q:"You just cloned a team repo and want to see every branch that exists on the remote. Which command?",o:["`git branch -a`","`git remote delete`","`git log --branches=none`","`git init --list`"],e:"`git branch -a` lists local and remote-tracking branches; `-r` lists remote ones only."},
+{c:"Scenario",q:"A reviewer requests changes on your open pull request. What should you do?",o:["Commit the fixes on the same branch and push; the pull request updates automatically","Close the pull request and open a brand-new repository","Force delete the main branch","Email the reviewer the code"],e:"A pull request tracks its branch, so any new commits you push appear in the same review."},
+{c:"Scenario",q:"Before a release you want to list the commits that exist on `release-2.0` but are not yet on `main`. Which command does that?",o:["`git log main..release-2.0`","`git merge main release-2.0 --list`","`git status release-2.0`","`git fetch main..release-2.0`"],e:"The `A..B` range syntax in `git log` shows commits reachable from B but not from A."},
+
+/* ---------- TRICKY (14) ---------- */
+{c:"Tricky",q:"Which form of `git reset` discards uncommitted changes in your working directory as well?",o:["`git reset --hard`","`git reset --soft`","`git reset --mixed`","`git reset --keep-all`"],e:"--hard moves HEAD and also overwrites the index and working tree. It is destructive."},
+{c:"Tricky",q:"What does a default `git reset` (which is `--mixed`) do?",o:["Moves HEAD back and unstages changes, but keeps your edited files","Deletes your edited files","Only moves HEAD and leaves changes staged","Creates a new commit that undoes the last one"],e:"Mixed reset rewinds HEAD and resets the index; your working directory files stay as they were."},
+{c:"Tricky",q:"Which statement about `git fetch` is TRUE?",o:["It updates remote-tracking branches but doesn't change your current branch or files","It merges remote changes into your working branch","It uploads local commits","It deletes stale local branches"],e:"Fetch only downloads. You decide when to merge, which is why it is the safer half of pull."},
+{c:"Tricky",q:"How does `git revert` differ from `git reset`?",o:["Revert adds a new commit that undoes a change; reset moves the branch pointer","Revert deletes the working directory; reset doesn't","They are identical","Revert only works on tags"],e:"Revert preserves history by adding an inverse commit. Reset rewrites where the branch points."},
+{c:"Tricky",q:"You add `build.log` to `.gitignore`, but it was already committed earlier. What happens?",o:["Git keeps tracking it; ignore rules only affect untracked files","Git removes it from history instantly","Git deletes the local file","Git refuses to commit anything"],e:"To stop tracking an already committed file, run `git rm --cached build.log` and commit."},
+{c:"Tricky",q:"What is the difference between a lightweight tag and an annotated tag?",o:["Annotated tags store tagger, date and a message; lightweight tags are just a name pointing at a commit","Lightweight tags can be pushed; annotated can't","Annotated tags are branches","There is no difference"],e:"Annotated tags are full objects in the repo; lightweight tags are simple pointers."},
+{c:"Tricky",q:"You run `git branch -d` on a branch that has commits never merged anywhere. What happens?",o:["Git refuses; you must use `-D` to force deletion","Git deletes it and the commits are gone forever","Git merges it automatically first","Git deletes the remote branch instead"],e:"The safe delete flag refuses to remove unmerged work. `-D` forces it."},
+{c:"Tricky",q:"True or false: `master` is the only branch name Git supports as the default.",o:["False; the default branch name is just a convention, and many repos use main","True; Git requires master","True; main is reserved for GitHub","False; Git has no default branch concept"],e:"Nothing is special about the name. You can rename a branch with `git branch -M main`."},
+{c:"Tricky",q:"What is the main danger of rebasing commits that you have already pushed to a shared branch?",o:["It rewrites history, which can disrupt teammates' copies","It deletes the remote repository","It converts commits into tags","It makes the repo centralized"],e:"Rebase creates new commits. Others who based work on the old ones will face confusing conflicts."},
+{c:"Tricky",q:"Which statement comparing Git and SVN is FALSE?",o:["Git has a global, incrementing revision number","SVN is a centralized version control system","Git protects content with cryptographic hashes","Git branches merge quickly compared to SVN folders"],e:"SVN has a global revision number; Git identifies commits by hashes and has none."},
+{c:"Tricky",q:"A branch can be merged by simply moving the pointer forward because no new commits exist on the target. What does `git merge --no-ff` change?",o:["It still creates a merge commit, preserving the record that a branch existed","It cancels the merge","It deletes the source branch","It rebases the source branch first"],e:"Without `--no-ff`, Git fast-forwards and leaves no merge commit. With it, history shows where the branch joined."},
+{c:"Tricky",q:"You run `git checkout <commit-hash>` instead of a branch name. What state are you in?",o:["Detached HEAD, where HEAD points to a commit rather than a branch","A merge conflict","A stashed state","A bare repository"],e:"In detached HEAD, new commits don't belong to any branch unless you create one."},
+{c:"Tricky",q:"You run `git add report.txt`, then edit `report.txt` again, then `git commit`. What is committed?",o:["The version that was staged at `git add` time","The latest edited version","Both versions as two commits","Nothing, the commit fails"],e:"Commit records the index. Run `git add` again to include the later edit."},
+{c:"Tricky",q:"What does `git commit -a -m \"message\"` automatically include?",o:["Modified and deleted tracked files, but not brand-new untracked files","Every file in the folder including untracked ones","Only files already in the staging area","Nothing; -a is not a valid flag"],e:"`-a` stages changes to tracked files. New files still need an explicit `git add`."}
+];
+
+/* ---------- app ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const rich = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const plain = s => s.replace(/`/g,"");
+const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; };
+const LETTERS = ["A","B","C","D"];
+
+let deck = [], idx = 0, score = 0, picked = null, submitted = false, results = [];
+
+function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active", s.id===id)); window.scrollTo(0,0); }
+
+function begin(source){
+  deck = shuffle(source).map(q => ({...q, opts: shuffle(q.o.map((t,i)=>({t, ok:i===0})))}));
+  idx = 0; score = 0; results = [];
+  $("qTotal").textContent = deck.length;
+  show("quiz"); render();
+}
+
+function render(){
+  const q = deck[idx]; picked = null; submitted = false;
+  $("qNum").textContent = idx+1;
+  $("liveScore").textContent = score; $("answered").textContent = idx;
+  $("barFill").style.width = (idx/deck.length*100)+"%";
+  const b = $("badge"); b.textContent = q.c === "Scenario" ? "Scenario based" : q.c; b.className = "badge "+q.c;
+  $("qText").innerHTML = rich(q.q);
+  const box = $("opts"); box.innerHTML = "";
+  q.opts.forEach((o,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "opt"; btn.type = "button"; btn.setAttribute("role","radio"); btn.setAttribute("aria-checked","false");
+    btn.innerHTML = `<span class="k">${LETTERS[i]}</span><span>${rich(o.t)}</span>`;
+    btn.addEventListener("click", ()=>choose(i));
+    box.appendChild(btn);
+  });
+  $("fb").className = "feedback";
+  $("submitBtn").style.display = ""; $("submitBtn").disabled = true;
+  $("nextBtn").style.display = "none";
+  $("nextBtn").textContent = idx === deck.length-1 ? "See results" : "Next question";
+}
+
+function choose(i){
+  if(submitted) return;
+  picked = i;
+  [...$("opts").children].forEach((el,k)=>{ el.classList.toggle("sel", k===i); el.setAttribute("aria-checked", k===i); });
+  $("submitBtn").disabled = false;
+}
+
+function submit(){
+  if(picked===null || submitted) return;
+  submitted = true;
+  const q = deck[idx], correctIdx = q.opts.findIndex(o=>o.ok), ok = picked===correctIdx;
+  if(ok) score++;
+  results.push({q, picked, correctIdx, ok});
+  [...$("opts").children].forEach((el,k)=>{
+    el.disabled = true; el.classList.remove("sel");
+    if(k===correctIdx) el.classList.add("right");
+    else if(k===picked) el.classList.add("wrong");
+    else el.classList.add("dim");
+  });
+  const fb = $("fb"); fb.className = "feedback show "+(ok?"ok":"no");
+  $("fbH").textContent = ok ? "Correct" : "Not quite. Correct answer: "+LETTERS[correctIdx];
+  $("fbP").innerHTML = rich(q.e);
+  $("liveScore").textContent = score; $("answered").textContent = idx+1;
+  $("barFill").style.width = ((idx+1)/deck.length*100)+"%";
+  $("submitBtn").style.display = "none"; $("nextBtn").style.display = ""; $("nextBtn").focus();
+}
+
+function next(){ if(idx < deck.length-1){ idx++; render(); } else finish(); }
+
+function finish(){
+  const total = results.length, pct = total ? Math.round(score/total*100) : 0;
+  $("rScore").textContent = score; $("rTotal").textContent = total;
+  $("ring").style.setProperty("--p", pct);
+  const [msg, sub] = pct>=90 ? ["Excellent work","You have a strong command of Git and GitHub."]
+    : pct>=75 ? ["Well done","Solid understanding. Review the missed questions to polish the gaps."]
+    : pct>=50 ? ["Good effort","You know the basics. Revisit branching, merging and undo commands."]
+    : ["Keep practising","Review the Git walkthroughs and try the labs again."];
+  $("rMsg").textContent = `${pct}%: ${msg}`; $("rSub").textContent = `${sub}${total<50?` (You ended after ${total} question${total===1?"":"s"}.)`:""}`;
+  const cats = ["Basic","Scenario","Tricky"], names = {Basic:"Basics",Scenario:"Scenario",Tricky:"Tricky"};
+  $("cats").innerHTML = cats.map(c=>{
+    const r = results.filter(x=>x.q.c===c), s = r.filter(x=>x.ok).length, p = r.length?Math.round(s/r.length*100):0;
+    return `<div class="cat"><span>${names[c]}</span><div class="t"><i style="width:${p}%"></i></div><span>${s}/${r.length}</span></div>`;
+  }).join("");
+  $("review").innerHTML = results.map((r,i)=>`
+    <div class="ritem"><div class="rq">${i+1}. ${rich(r.q.q)}</div>
+    <div class="ya ${r.ok?"ok":""}">Your answer: ${rich(r.q.opts[r.picked].t)} ${r.ok?"✓":"✗"}</div>
+    ${r.ok?"":`<div class="ca">Correct: ${rich(r.q.opts[r.correctIdx].t)}</div>`}</div>`).join("");
+  $("review").style.display = "none"; $("toggleReview").textContent = "Show answer review";
+  $("wrongBtn").style.display = results.some(r=>!r.ok) ? "" : "none";
+  show("result");
+}
+
+$("startBtn").onclick = ()=>begin(QUESTIONS);
+$("submitBtn").onclick = submit;
+$("nextBtn").onclick = next;
+$("quitBtn").onclick = ()=>{ if(results.length===0){ show("start"); } else if(confirm("End the quiz now and see your results?")) finish(); };
+$("retryBtn").onclick = ()=>begin(QUESTIONS);
+$("wrongBtn").onclick = ()=>begin(results.filter(r=>!r.ok).map(r=>r.q));
+$("toggleReview").onclick = ()=>{ const r=$("review"), open=r.style.display==="none"; r.style.display=open?"grid":"none"; $("toggleReview").textContent=open?"Hide answer review":"Show answer review"; };
+
+document.addEventListener("keydown", e=>{
+  if(!$("quiz").classList.contains("active")) return;
+  if(["1","2","3","4"].includes(e.key) && !submitted){ choose(+e.key-1); }
+  else if(e.key==="Enter"){ if(!submitted){ if(picked!==null){ e.preventDefault(); submit(); } } else if(document.activeElement!==$("nextBtn")){ e.preventDefault(); next(); } }
+});
+</script>
+</body>
+</html>
