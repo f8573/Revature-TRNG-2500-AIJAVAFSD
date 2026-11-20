@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java Basics: Fill in the Code</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --text:#1c2230; --muted:#5d6678; --line:#dfe3ea;
+    --accent:#2f5bea; --accent-ink:#fff;
+    --ok:#17803d; --ok-bg:#e6f6ec; --bad:#c62828; --bad-bg:#fdeaea;
+    --code-bg:#0f1624; --code-text:#e6eaf2; --code-cm:#7f8aa3; --input-bg:#1d2840; --input-line:#46567d;
+    --tip-bg:#fff7e0; --tip-line:#f0d58a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0e121b; --card:#161c29; --text:#e8ecf4; --muted:#9aa4ba; --line:#2a3347;
+      --accent:#6b8cff; --accent-ink:#0b1020;
+      --ok:#4cd081; --ok-bg:#12301f; --bad:#ff7b7b; --bad-bg:#3a1717;
+      --code-bg:#0a0e17; --tip-bg:#2c2512; --tip-line:#5c4c1c;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:900px;margin:0 auto;padding:0 16px 80px}
+
+  /* sticky score bar */
+  .scorebar{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+  .scorebar .in{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .score{font-size:1.5rem;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+  .score small{font-size:.85rem;font-weight:500;color:var(--muted);margin-left:6px}
+  .bar{flex:1;min-width:140px;height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+  .btns{display:flex;gap:8px}
+  button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:8px 16px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  .strip{flex-basis:100%;display:grid;grid-template-columns:repeat(15,1fr);gap:4px}
+  .strip button{display:flex;flex-direction:column;align-items:center;line-height:1.15;padding:3px 0;font-size:.72rem;font-weight:600;
+    background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:6px}
+  .strip button b{font-size:.82rem;color:var(--text)}
+  .strip button.ok{border-color:var(--ok);background:var(--ok-bg)} .strip button.ok b{color:var(--ok)}
+  .strip button.bad{border-color:var(--bad);background:var(--bad-bg)} .strip button.bad b{color:var(--bad)}
+  .strip button.cur{outline:2px solid var(--accent);outline-offset:1px}
+  .strip button:disabled{cursor:default;opacity:.7}
+  @media (max-width:640px){ .strip{grid-template-columns:repeat(5,1fr)} }
+  header.intro{padding:28px 0 8px}
+  h1{margin:0 0 6px;font-size:1.7rem;letter-spacing:-.02em}
+  .intro p{margin:4px 0;color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+  .chip{font-size:.8rem;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:3px 10px;color:var(--muted)}
+  .how{margin:14px 0 0;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:10px;font-size:.92rem}
+  .how ul{margin:6px 0 0;padding-left:20px}
+
+  .q{display:none;background:var(--card);border:1px solid var(--line);border-radius:12px;margin:20px 0;padding:18px 18px 16px}
+  .q.active{display:block}
+  .q.ok{border-color:var(--ok)} .q.bad{border-color:var(--bad)}
+  .qh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .qn{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+  .qt{margin:2px 0 0;font-size:1.1rem}
+  .marks{font-weight:700;white-space:nowrap;padding:3px 10px;border-radius:99px;background:var(--line);font-size:.9rem}
+  .q.ok .marks{background:var(--ok-bg);color:var(--ok)}
+  .q.bad .marks{background:var(--bad-bg);color:var(--bad)}
+  .obj{margin:8px 0 12px;color:var(--muted);font-size:.95rem}
+  .obj b{color:var(--text)}
+
+  pre.code{margin:0;background:var(--code-bg);color:var(--code-text);padding:14px 16px;border-radius:10px;overflow-x:auto;
+    font:14px/2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4}
+  .cm{color:var(--code-cm)}
+  pre.code input{font:inherit;color:#fff;background:var(--input-bg);border:1px solid var(--input-line);border-radius:5px;
+    padding:0 6px;width:11ch;line-height:1.5;margin:0 2px;text-align:center}
+  pre.code input.good{border-color:#4cd081;background:#12301f}
+  pre.code input.wrong{border-color:#ff7b7b;background:#3a1717}
+  pre.code input:disabled{opacity:1}
+  .cm input{color:#fff}
+
+  .hintbtn{margin-top:10px;background:transparent;color:var(--accent);padding:2px 0;font-weight:600;font-size:.9rem}
+  .hint{display:none;margin-top:6px;font-size:.92rem;color:var(--muted)}
+  .hint.show{display:block}
+
+  .fb{display:none;margin-top:14px}
+  .q.done .fb{display:block}
+  .q.done .hintbtn,.q.done .hint{display:none}
+  .fb h4{margin:12px 0 6px;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .miss{margin:0 0 8px;padding:10px 12px;border-radius:8px;background:var(--bad-bg);border-left:4px solid var(--bad);font-size:.93rem}
+  .miss code,.fixed code{font:13px ui-monospace,Menlo,Consolas,monospace;background:rgba(127,127,127,.18);padding:1px 5px;border-radius:4px}
+  .allok{padding:10px 12px;border-radius:8px;background:var(--ok-bg);border-left:4px solid var(--ok);font-size:.93rem}
+  .tip{padding:10px 12px;border-radius:8px;background:var(--tip-bg);border-left:4px solid var(--tip-line);font-size:.93rem}
+  details.sol{margin-top:10px}
+  details.sol summary{cursor:pointer;font-weight:600;font-size:.92rem;color:var(--accent)}
+
+  .final{display:none;margin:28px 0;padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--line);text-align:center}
+  .finished .final{display:block}
+  .actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .actions .check,.actions .next{margin-left:auto}
+  .qh .step{font-size:.8rem;color:var(--muted)}
+  .rows{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:14px 0;text-align:left}
+  .rows button{display:flex;justify-content:space-between;background:var(--bg);color:var(--text);border:1px solid var(--line);font-weight:500;font-size:.88rem}
+  .rows button.ok{border-color:var(--ok)} .rows button.bad{border-color:var(--bad)}
+  .finished .q{display:none!important}
+  .finished header.intro{display:none}
+  .final .big{font-size:2.2rem;font-weight:800}
+  @media (max-width:560px){ .score{font-size:1.2rem} pre.code{font-size:13px} }
+</style>
+</head>
+<body>
+
+<div class="scorebar" role="status" aria-live="polite">
+  <div class="in">
+    <div class="score"><span id="total">0</span> / <span id="max">75</span><small id="pct">Not submitted</small></div>
+    <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+    <div class="btns">
+      <span id="answered" class="chip">Question 1 of 15</span>
+      <button id="reset" class="ghost">Restart</button>
+    </div>
+    <div class="strip" id="strip" aria-label="Score per question"></div>
+  </div>
+</div>
+
+<div class="wrap" id="app">
+  <header class="intro">
+    <h1>Java Basics: Fill in the Code</h1>
+    <p>15 questions &middot; 5 marks each &middot; 75 marks in total.</p>
+    <div class="chips">
+      <span class="chip">Data Types</span><span class="chip">Wrapper Classes</span><span class="chip">Casting</span>
+      <span class="chip">Reference Variables</span><span class="chip">Value vs Reference</span>
+      <span class="chip">String Basics</span><span class="chip">StringBuilder &amp; StringBuffer</span>
+    </div>
+    <div class="how">
+      <b>How it works</b>
+      <ul>
+        <li>One question is shown at a time. Type the missing code into every box (answers are case-sensitive, as in Java).</li>
+        <li>Each question has 5 blanks worth 1 mark each. Partial marks count.</li>
+        <li>Press <b>Submit answer</b> for that question. Mistakes turn red and you see the right answer, why, and a tip to improve the code. Then go to the next question.</li>
+        <li>Your running score is always shown at the top. <b>Restart</b> clears everything.</li>
+      </ul>
+    </div>
+  </header>
+  <div id="questions"></div>
+  <div class="final" id="final"></div>
+</div>
+
+<script>
+/* ---------- Question bank ----------
+   code: Java with {{n}} placeholders. Each blank is worth 1 mark; 5 blanks = 5 marks per question.
+   a: accepted answers. why: explanation shown when the blank is wrong.                       */
+const Q = [
+{
+  topic:"Data Types",
+  title:"Choose the right primitive type",
+  objective:"Pick the correct primitive data type for each value.",
+  hint:"Java has 8 primitives: byte, short, int, long, float, double, char, boolean. A decimal literal is double by default.",
+  code:`public class Q1 {
+    public static void main(String[] args) {
+        {{1}} age = 25;                  // whole number, 32-bit
+        {{2}} price = 99.99;             // decimal, 64-bit (default for decimals)
+        {{3}} grade = 'A';               // single 16-bit Unicode character
+        {{4}} isPassed = true;           // true / false only
+        {{5}} population = 8000000000L;  // too big for int, needs 64-bit
+    }
+}`,
+  b:[
+    {a:["int"], why:"int is the default 32-bit whole-number type."},
+    {a:["double"], why:"Decimal literals such as 99.99 are double unless you add the f suffix."},
+    {a:["char"], why:"A single character in single quotes is a char."},
+    {a:["boolean"], why:"boolean holds only true or false."},
+    {a:["long"], why:"The L suffix marks a long literal; 8 billion is larger than Integer.MAX_VALUE (2,147,483,647)."}
+  ],
+  tip:"Write big literals with underscores for readability: <code>8_000_000_000L</code>. For money, avoid <code>double</code> (binary rounding errors); use <code>BigDecimal</code> or whole cents in a <code>long</code>."
+},
+{
+  topic:"Data Types",
+  title:"Default values and ranges",
+  objective:"Know the default values of fields and the limits of types.",
+  hint:"Fields (not local variables) get default values: numbers 0, boolean false, objects null.",
+  code:`public class Q2 {
+    static int count;
+    static boolean flag;
+    static String name;
+
+    public static void main(String[] args) {
+        System.out.println(count);   // prints {{1}}
+        System.out.println(flag);    // prints {{2}}
+        System.out.println(name);    // prints {{3}}
+        byte b = {{4}};              // the largest value a byte can hold
+        System.out.println(Integer.{{5}});  // constant for the largest int
+    }
+}`,
+  b:[
+    {a:["0"], why:"Numeric fields default to 0."},
+    {a:["false"], why:"boolean fields default to false."},
+    {a:["null"], why:"Reference-type fields (String, objects) default to null."},
+    {a:["127"], why:"byte is 8-bit signed: -128 to 127."},
+    {a:["MAX_VALUE"], why:"Integer.MAX_VALUE is 2,147,483,647."}
+  ],
+  tip:"Local variables get <b>no</b> default value; using one before assigning it is a compile error. Prefer the named constants (<code>Integer.MAX_VALUE</code>) over typing magic numbers like 2147483647."
+},
+{
+  topic:"Data Types",
+  title:"final, var and literal formats",
+  objective:"Use constants, type inference and the different literal prefixes/suffixes.",
+  hint:"Think: constant keyword, Java 10 inference keyword, float suffix, binary prefix 0b, hex prefix 0x.",
+  code:`public class Q3 {
+    public static void main(String[] args) {
+        {{1}} double PI = 3.14159;   // value can never change
+        {{2}} total = 10 + 20;       // compiler infers int (Java 10+)
+        float ratio = 2.5{{3}};      // suffix that makes it a float literal
+        int binary = {{4}}1010;      // binary literal, equals 10
+        int hex = {{5}}FF;           // hexadecimal literal, equals 255
+    }
+}`,
+  b:[
+    {a:["final"], why:"final makes a variable a constant; reassigning it is a compile error."},
+    {a:["var"], why:"var lets the compiler infer the type from the right-hand side (local variables only)."},
+    {a:["f","F"], why:"Without f, 2.5 is a double and would not fit into a float."},
+    {a:["0b","0B"], why:"Binary literals start with 0b."},
+    {a:["0x","0X"], why:"Hex literals start with 0x."}
+  ],
+  tip:"Name constants in UPPER_SNAKE_CASE and make them <code>static final</code> when shared. Use <code>var</code> only when the type is obvious from the right side, so the code stays readable."
+},
+{
+  topic:"Wrapper Classes",
+  title:"Boxing, unboxing and parsing",
+  objective:"Convert between primitives, wrapper objects and Strings.",
+  hint:"Wrapper for int is Integer. Parsing methods start with parse; conversion to primitive ends with Value().",
+  code:`public class Q4 {
+    public static void main(String[] args) {
+        int p = 10;
+        Integer boxed = Integer.{{1}}(p);        // primitive -> wrapper (factory method)
+        int back = boxed.{{2}}();                // wrapper -> primitive
+        Integer auto = p;                        // this feature is called {{3}}
+        int parsed = Integer.{{4}}("123");       // String -> int
+        double d = Double.{{5}}("3.14");         // String -> double
+    }
+}`,
+  b:[
+    {a:["valueOf"], why:"Integer.valueOf(int) is the recommended way to box. The Integer constructor is deprecated."},
+    {a:["intValue"], why:"intValue() returns the primitive int inside the wrapper."},
+    {a:["autoboxing","auto-boxing","boxing"], why:"The compiler automatically converts int to Integer: autoboxing."},
+    {a:["parseInt"], why:"Integer.parseInt(String) returns a primitive int."},
+    {a:["parseDouble"], why:"Double.parseDouble(String) returns a primitive double."}
+  ],
+  tip:"Wrap <code>parseInt</code> in try/catch for <code>NumberFormatException</code> when input comes from users. Prefer <code>valueOf</code> over <code>new Integer(..)</code> because it reuses cached objects."
+},
+{
+  topic:"Wrapper Classes",
+  title:"Integer cache, equals and null",
+  objective:"Compare wrapper objects correctly and know the unboxing risk.",
+  hint:"Integer values from -128 to 127 are cached, so == works there by accident only. Use equals() for content.",
+  code:`public class Q5 {
+    public static void main(String[] args) {
+        Integer a = 127, b = 127;
+        Integer c = 128, d = 128;
+        System.out.println(a == b);          // {{1}}
+        System.out.println(c == d);          // {{2}}
+        System.out.println(c.{{3}}(d));      // true (compares the values)
+        Integer n = null;
+        int x = n;                           // throws {{4}}
+        System.out.println(Integer.{{5}}(5, 9));  // -1 (static comparison method)
+    }
+}`,
+  b:[
+    {a:["true"], why:"127 is inside the Integer cache (-128..127), so both variables point to the same object."},
+    {a:["false"], why:"128 is outside the cache, so autoboxing creates two different objects and == compares references."},
+    {a:["equals"], why:"equals() compares the wrapped values."},
+    {a:["NullPointerException"], why:"Unboxing null calls n.intValue() on null, which throws NullPointerException."},
+    {a:["compare"], why:"Integer.compare(x, y) returns negative, 0 or positive."}
+  ],
+  tip:"Never compare wrappers with <code>==</code>. Use <code>equals()</code>, or <code>Objects.equals(a, b)</code> which is also null-safe. Use primitives (<code>int</code>) in hot loops to avoid boxing cost and null surprises."
+},
+{
+  topic:"Casting",
+  title:"Widening and narrowing",
+  objective:"Predict what happens when converting between numeric types.",
+  hint:"Casting a double to int drops the decimals. A value outside the byte range wraps around (130 - 256 = ?).",
+  code:`public class Q6 {
+    public static void main(String[] args) {
+        int i = 100;
+        long l = i;                    // automatic, called {{1}} conversion
+        double d = 9.78;
+        int n = ({{2}}) d;             // explicit cast needed (data may be lost)
+        System.out.println(n);         // {{3}}
+        int big = 130;
+        byte by = ({{4}}) big;         // explicit cast to byte
+        System.out.println(by);        // {{5}}
+    }
+}`,
+  b:[
+    {a:["widening","implicit","automatic"], why:"Small type to larger type is safe, so Java does it automatically: widening."},
+    {a:["int"], why:"A narrowing conversion needs an explicit (int) cast."},
+    {a:["9"], why:"Casting truncates; it does not round. 9.78 becomes 9."},
+    {a:["byte"], why:"Narrowing int to byte needs the (byte) cast."},
+    {a:["-126"], why:"130 does not fit in a byte (max 127), so it wraps: 130 - 256 = -126."}
+  ],
+  tip:"Use <code>Math.round(d)</code> if you want rounding instead of truncation. Use <code>Math.toIntExact(long)</code> to fail loudly instead of silently overflowing."
+},
+{
+  topic:"Casting",
+  title:"Type promotion in expressions",
+  objective:"Understand integer division, char arithmetic and automatic promotion.",
+  hint:"int / int is integer division. 'A' is 65. byte + byte becomes int.",
+  code:`public class Q7 {
+    public static void main(String[] args) {
+        int a = 7, b = 2;
+        System.out.println(a / b);              // {{1}}
+        System.out.println((double) a / b);     // {{2}}
+        System.out.println('A' + 1);            // {{3}}
+        System.out.println((char) ('A' + 1));   // {{4}}
+        byte x = 10, y = 20;
+        {{5}} sum = x + y;                      // byte + byte is promoted to this type
+    }
+}`,
+  b:[
+    {a:["3"], why:"Both operands are int, so the result is integer division: 3."},
+    {a:["3.5"], why:"Casting a to double first makes it floating-point division."},
+    {a:["66"], why:"'A' is 65 and 'A' + 1 is an int, so 66 is printed."},
+    {a:["B"], why:"Casting the int 66 back to char gives 'B'."},
+    {a:["int"], why:"Arithmetic on byte/short/char is promoted to int. Writing byte here would not compile."}
+  ],
+  tip:"Cast <b>one operand</b> before dividing, <code>(double) a / b</code>, not the result, <code>(double)(a / b)</code> (that would still be 3.0). Use <code>a / (double) b</code> or <code>1.0 * a / b</code> for the same effect."
+},
+{
+  topic:"Reference Variables",
+  title:"Objects, aliases and null",
+  objective:"Create objects and see that two reference variables can point to the same object.",
+  hint:"s2 = s1 copies the reference, not the object. == on references checks if they are the same object.",
+  code:`class Student { String name; }
+
+public class Q8 {
+    public static void main(String[] args) {
+        Student s1 = {{1}} Student();          // create the object
+        s1.name = "Ava";
+        Student s2 = s1;
+        s2.name = "Ben";
+        System.out.println(s1.name);           // {{2}}
+        Student s3 = {{3}};                    // refers to no object
+        System.out.println(s1 == s2);          // {{4}}
+        System.out.println(s1 {{5}} Student);  // true (type check operator)
+    }
+}`,
+  b:[
+    {a:["new"], why:"The new keyword allocates the object on the heap."},
+    {a:["Ben"], why:"s1 and s2 point to the same object, so the change through s2 is visible through s1."},
+    {a:["null"], why:"null means the reference variable points to nothing."},
+    {a:["true"], why:"== on references is true only if both point to the same object, which they do."},
+    {a:["instanceof"], why:"instanceof tests the runtime type of an object."}
+  ],
+  tip:"Guard against <code>null</code> before using a reference (<code>if (s3 != null)</code> or <code>Optional</code>). In Java 16+, use pattern matching: <code>if (obj instanceof Student st) { st.name... }</code>."
+},
+{
+  topic:"Reference Variables",
+  title:"Arrays are objects",
+  objective:"Treat arrays as reference types: copy the reference vs copy the data.",
+  hint:"copy = arr copies the reference. clone() makes a new array with the same values.",
+  code:`public class Q9 {
+    public static void main(String[] args) {
+        int[] arr = {{1}} int[3];            // allocate an array of 3 ints
+        arr[0] = 5;
+        int[] copy = arr;
+        copy[0] = 99;
+        System.out.println(arr[0]);          // {{2}}
+        int[] dup = arr.{{3}}();             // creates a separate copy of the data
+        dup[0] = 1;
+        System.out.println(arr[0]);          // {{4}}
+        System.out.println(arr.{{5}});       // 3 (a field, no parentheses)
+    }
+}`,
+  b:[
+    {a:["new"], why:"Arrays are objects, so they are created with new."},
+    {a:["99"], why:"copy and arr point to the same array, so arr[0] was changed to 99."},
+    {a:["clone"], why:"clone() creates a new array holding the same elements."},
+    {a:["99"], why:"dup is an independent copy, so changing dup[0] does not touch arr."},
+    {a:["length"], why:"length is a field of arrays. (String uses the length() method.)"}
+  ],
+  tip:"Use <code>Arrays.copyOf(arr, arr.length)</code> or <code>arr.clone()</code> for copying, and <code>Arrays.equals(a, b)</code> / <code>Arrays.toString(arr)</code> for comparing and printing instead of hand-written loops. Note: <code>clone()</code> is shallow for arrays of objects."
+},
+{
+  topic:"Value vs Reference",
+  title:"Java is always pass-by-value",
+  objective:"Predict what a method can and cannot change in the caller.",
+  hint:"A method gets a copy of the variable. For objects the copy is a copy of the reference, so the object can be modified but the caller's variable cannot be re-pointed.",
+  code:`public class Q10 {
+    static void change(int x, int[] arr, String s) {
+        x = 50;
+        arr[0] = 50;
+        s = s {{1}} " World";       // creates a new String
+    }
+    public static void main(String[] args) {
+        int n = 1;
+        int[] a = {1};
+        String s = "Hello";
+        change(n, a, s);
+        System.out.println(n);      // {{2}}
+        System.out.println(a[0]);   // {{3}}
+        System.out.println(s);      // {{4}}
+        // Java always passes arguments by {{5}}
+    }
+}`,
+  b:[
+    {a:["+"], why:"The + operator concatenates Strings."},
+    {a:["1"], why:"x was a copy of n, so n is still 1."},
+    {a:["50"], why:"arr is a copy of the reference, but it points to the same array, so the element changed."},
+    {a:["Hello"], why:"Strings are immutable. s inside the method now points to a new String; the caller's s is untouched."},
+    {a:["value"], why:"Always by value. For objects, the value that is copied is the reference."}
+  ],
+  tip:"If a method needs to give back a new String or number, <b>return it</b> (<code>s = change(s)</code>). Avoid methods that secretly modify arrays or objects passed in; it surprises callers. Pass a copy or return a new one."
+},
+{
+  topic:"Value vs Reference",
+  title:"Swap, mutate and reassign",
+  objective:"Distinguish changing an object's state from changing the reference, and know where things live in memory.",
+  hint:"Mutating through the reference is visible to the caller. Assigning a new object to the parameter is not.",
+  code:`class Student { String name; }
+
+public class Q11 {
+    static void swap(int a, int b) { int t = a; a = b; b = t; }
+    static void rename(Student st)   { st.name = "Zed"; }
+    static void reassign(Student st) { st = new Student(); st.name = "New"; }
+
+    public static void main(String[] args) {
+        int x = 1, y = 2;
+        swap(x, y);
+        System.out.println(x + "," + y);   // {{1}}
+        Student s = new Student();
+        s.name = "Old";
+        rename(s);
+        System.out.println(s.name);        // {{2}}
+        reassign(s);
+        System.out.println(s.name);        // {{3}}
+        // local primitives live on the {{4}}, objects live on the {{5}}
+    }
+}`,
+  b:[
+    {a:["1,2"], why:"swap() only swaps its own copies, so x and y are unchanged."},
+    {a:["Zed"], why:"rename() changes the field of the same object that s points to."},
+    {a:["Zed"], why:"reassign() points its own copy of the reference to a new object. The caller's s still points to the old one, still named Zed."},
+    {a:["stack"], why:"Local primitives and references live on the call stack."},
+    {a:["heap"], why:"Objects (including arrays) are allocated on the heap."}
+  ],
+  tip:"To swap values, return them in a small object/array or use an <code>int[]</code>, or just swap inline. Making a class immutable (final fields, no setters) removes the whole 'who changed my object?' problem."
+},
+{
+  topic:"String Basics",
+  title:"Common String methods",
+  objective:"Use the most common String methods and remember their return values.",
+  hint:"Methods needed: remove outer spaces, length, character at index, part of a string from an index, check if text is present.",
+  code:`public class Q12 {
+    public static void main(String[] args) {
+        String s = "  Java Basics  ";
+        String t = s.{{1}}();                       // removes leading/trailing spaces
+        System.out.println(t.{{2}}());              // 11
+        System.out.println(t.{{3}}(0));             // J
+        System.out.println(t.{{4}}(5));             // Basics
+        System.out.println(t.{{5}}("Java"));        // true (is the text present?)
+    }
+}`,
+  b:[
+    {a:["trim","strip"], why:"trim()/strip() remove surrounding whitespace. strip() is the Unicode-aware, newer version."},
+    {a:["length"], why:"length() is a method on String (arrays use the field .length)."},
+    {a:["charAt"], why:"charAt(index) returns the char at that position."},
+    {a:["substring"], why:"substring(5) returns everything from index 5 to the end."},
+    {a:["contains","startsWith"], why:"contains(CharSequence) returns true if the text is found."}
+  ],
+  tip:"Use <code>isBlank()</code> (Java 11) instead of <code>trim().isEmpty()</code>. Remember Strings are immutable: <code>s.trim();</code> on its own does nothing, because the result must be assigned."
+},
+{
+  topic:"String Basics",
+  title:"String pool, == and equals",
+  objective:"Know the difference between literals and new String, and how to compare Strings.",
+  hint:"Literals are shared in the String pool. new String(...) always makes a separate object. intern() returns the pooled one.",
+  code:`public class Q13 {
+    public static void main(String[] args) {
+        String a = "hi";
+        String b = "hi";
+        String c = {{1}} String("hi");          // forces a new object on the heap
+        System.out.println(a == b);             // {{2}}
+        System.out.println(a == c);             // {{3}}
+        System.out.println(a.{{4}}(c));         // true (compares the text)
+        System.out.println(c.{{5}}() == a);     // true (returns the pooled instance)
+    }
+}`,
+  b:[
+    {a:["new"], why:"new always creates a fresh object, bypassing the pool."},
+    {a:["true"], why:"Both literals refer to the same pooled String object."},
+    {a:["false"], why:"c is a different object on the heap, so == (reference comparison) is false."},
+    {a:["equals"], why:"equals() compares the characters, which is what you want for Strings."},
+    {a:["intern"], why:"intern() returns the canonical pooled instance, so it is the same object as a."}
+  ],
+  tip:"Do not write <code>new String(\"hi\")</code>; just use the literal. Put the literal first to avoid NullPointerException: <code>\"hi\".equals(input)</code>. Use <code>equalsIgnoreCase</code> for case-insensitive checks."
+},
+{
+  topic:"StringBuilder & StringBuffer",
+  title:"Building strings with StringBuilder",
+  objective:"Modify text without creating many String objects.",
+  hint:"Methods: append(), insert(index, text), reverse(), toString().",
+  code:`public class Q14 {
+    public static void main(String[] args) {
+        StringBuilder sb = {{1}} StringBuilder("Java");
+        sb.{{2}}(" Rocks");               // add to the end  -> Java Rocks
+        sb.{{3}}(0, "I love ");           // add at index 0  -> I love Java Rocks
+        sb.{{4}}();                       // flips the characters  -> skcoR avaJ evol I
+        String result = sb.{{5}}();       // convert to an immutable String
+        System.out.println(result);
+    }
+}`,
+  b:[
+    {a:["new"], why:"StringBuilder is a class, so it is created with new."},
+    {a:["append"], why:"append() adds at the end and returns the same builder (so calls can be chained)."},
+    {a:["insert"], why:"insert(offset, text) adds text at the given position."},
+    {a:["reverse"], why:"reverse() reverses the contents in place."},
+    {a:["toString"], why:"toString() creates a String from the builder's content."}
+  ],
+  tip:"Chain the calls: <code>new StringBuilder(\"Java\").append(\" Rocks\").insert(0, \"I love \")</code>. Give the builder a starting capacity, <code>new StringBuilder(64)</code>, when you know the approximate size, to avoid internal resizing."
+},
+{
+  topic:"StringBuilder & StringBuffer",
+  title:"StringBuffer vs StringBuilder in a loop",
+  objective:"Choose between the two classes and build a comma-separated value efficiently.",
+  hint:"StringBuffer is synchronized (thread-safe), StringBuilder is not (faster). deleteCharAt(index) removes one char.",
+  code:`public class Q15 {
+    public static void main(String[] args) {
+        {{1}} safe = new StringBuffer();      // thread-safe, synchronized
+        {{2}} fast = new StringBuilder();     // not synchronized, faster
+        for (int i = 0; i < 5; i++) {
+            fast.append(i).{{3}}(',');        // adds the comma after each number
+        }
+        fast.{{4}}(fast.length() - 1);        // removes the trailing comma
+        System.out.println(fast);             // 0,1,2,3,4
+        System.out.println(fast.{{5}}());     // 9 (number of characters)
+    }
+}`,
+  b:[
+    {a:["StringBuffer"], why:"StringBuffer methods are synchronized, so it is safe to share between threads."},
+    {a:["StringBuilder"], why:"StringBuilder has the same API without synchronization overhead; best for single-thread use."},
+    {a:["append"], why:"append(char) adds one character and can be chained after append(i)."},
+    {a:["deleteCharAt"], why:"deleteCharAt(index) removes the character at that index."},
+    {a:["length"], why:"length() gives the number of characters: 0,1,2,3,4 is 9 characters."}
+  ],
+  tip:"Never build strings with <code>s += i</code> inside a loop: every pass creates a new String (O(n&sup2;)). Use StringBuilder, or for this exact job <code>String.join(\",\", list)</code> / <code>Collectors.joining(\",\")</code> and skip the trailing-comma fix completely."
+}
+];
+
+/* ---------- Helpers ---------- */
+const PER_Q = 5;
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+// forgiving whitespace: trim, collapse, ignore spaces around punctuation
+const norm = s => (s||"").trim().replace(/\s+/g," ").replace(/\s*([()<>.,;=+\-*\/\[\]])\s*/g,"$1");
+const isRight = (blank, val) => blank.a.some(x => norm(x) === norm(val));
+
+function renderCode(code){
+  let h = esc(code).replace(/\/\/[^\n]*/g, m => '<span class="cm">'+m+'</span>');
+  return h.replace(/\{\{(\d)\}\}/g, (_,n) =>
+    '<input type="text" data-n="'+n+'" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Blank '+n+'">');
+}
+
+/* ---------- Build page ---------- */
+const root = document.getElementById("questions");
+Q.forEach((q,i)=>{
+  const el = document.createElement("section");
+  el.className = "q"; el.id = "q"+i;
+  el.innerHTML =
+    '<div class="qh"><div><div class="qn">Question '+(i+1)+' of '+Q.length+' &middot; '+q.topic+'</div><h2 class="qt">'+q.title+'</h2></div>'+
+    '<span class="marks">'+PER_Q+' marks</span></div>'+
+    '<p class="obj"><b>Objective:</b> '+q.objective+'</p>'+
+    '<pre class="code">'+renderCode(q.code)+'</pre>'+
+    '<button class="hintbtn" type="button">Show hint</button><div class="hint">'+q.hint+'</div>'+
+    '<div class="fb"></div>'+
+    '<div class="actions"><button class="prev ghost" type="button">&larr; Previous</button>'+
+    '<button class="check" type="button">Submit answer</button>'+
+    '<button class="next" type="button">'+(i===Q.length-1?'See final score':'Next question')+' &rarr;</button></div>';
+  root.appendChild(el);
+});
+document.getElementById("max").textContent = Q.length*PER_Q;
+
+const totalEl=document.getElementById("total"), pctEl=document.getElementById("pct"),
+      fill=document.getElementById("barfill"), ansEl=document.getElementById("answered");
+const res = Q.map(()=>null);   // score per question once submitted
+let cur = 0;
+
+function sum(){ return res.reduce((t,x)=>t+(x||0),0); }
+function doneCount(){ return res.filter(x=>x!==null).length; }
+function updateTop(){
+  const max = Q.length*PER_Q, t = sum(), d = doneCount();
+  totalEl.textContent = t;
+  pctEl.textContent = d ? d+" of "+Q.length+" submitted" : "Nothing submitted yet";
+  fill.style.width = (d/Q.length*100)+"%";
+  ansEl.textContent = "Question "+(cur+1)+" of "+Q.length;
+  const next = res.findIndex(x=>x===null);           // first unsubmitted question
+  document.getElementById("strip").innerHTML = Q.map((_,i)=>{
+    const r = res[i], cls = (r===null?"":(r===PER_Q?"ok":"bad"))+(i===cur&&!document.body.classList.contains("finished")?" cur":"");
+    const ok = r!==null || i===next;
+    return '<button type="button" data-q="'+i+'" class="'+cls+'"'+(ok?'':' disabled')+' title="Question '+(i+1)+'"><span>Q'+(i+1)+'</span><b>'+(r===null?"–":r)+'/'+PER_Q+'</b></button>';
+  }).join("");
+}
+document.getElementById("strip").addEventListener("click",e=>{
+  const b=e.target.closest("[data-q]"); if(b&&!b.disabled) show(+b.dataset.q);
+});
+
+function show(i){
+  cur = i;
+  document.body.classList.remove("finished");
+  Q.forEach((_,k)=>{
+    const el = document.getElementById("q"+k);
+    el.classList.toggle("active", k===i);
+  });
+  const el = document.getElementById("q"+i), done = res[i]!==null;
+  el.querySelector(".prev").style.display = i===0 ? "none" : "";
+  el.querySelector(".check").style.display = done ? "none" : "";
+  el.querySelector(".next").style.display = done ? "" : "none";
+  updateTop();
+  window.scrollTo({top:0});
+  if(!done){ const f = el.querySelector("input"); if(f) f.focus({preventScroll:true}); }
+}
+
+document.querySelectorAll(".hintbtn").forEach(b=>b.addEventListener("click",()=>{
+  const h=b.nextElementSibling; h.classList.toggle("show");
+  b.textContent = h.classList.contains("show") ? "Hide hint" : "Show hint";
+}));
+
+/* ---------- Grading (one question) ---------- */
+function submitQ(i){
+  if(res[i]!==null) return;
+  const q = Q[i], el = document.getElementById("q"+i);
+  const inputs = [...el.querySelectorAll("input")];
+  const empty = inputs.filter(x=>!x.value.trim()).length;
+  if(empty && !confirm(empty+" blank(s) are empty and will score 0. Submit anyway?")) return;
+  let score = 0, misses = "";
+  inputs.forEach((inp,k)=>{
+    const blank = q.b[k];
+    inp.disabled = true;
+    if(isRight(blank, inp.value)){ score++; inp.classList.add("good"); }
+    else {
+      inp.classList.add("wrong");
+      const you = inp.value.trim();
+      misses += '<div class="miss"><b>Blank '+(k+1)+':</b> '+(you ? 'you wrote <code>'+esc(you)+'</code>' : 'left empty')+
+        '. Expected <code>'+esc(blank.a[0])+'</code>'+(blank.a.length>1?' (also accepted: '+blank.a.slice(1).map(x=>'<code>'+esc(x)+'</code>').join(", ")+')':'')+
+        '.<br>'+blank.why+'</div>';
+    }
+  });
+  res[i] = score;
+  el.classList.add("done", score===PER_Q ? "ok" : "bad");
+  el.querySelector(".marks").textContent = score+" / "+PER_Q;
+  let n=0; const solved = q.code.replace(/\{\{\d\}\}/g, ()=>q.b[n++].a[0]);
+  el.querySelector(".fb").innerHTML =
+    (misses ? '<h4>Mistakes</h4>'+misses : '<div class="allok"><b>Perfect.</b> All 5 blanks are correct.</div>')+
+    '<h4>How to optimize / improve</h4><div class="tip">'+q.tip+'</div>'+
+    '<details class="sol"><summary>Show complete solution</summary><pre class="code">'+esc(solved).replace(/\/\/[^\n]*/g,m=>'<span class="cm">'+m+'</span>')+'</pre></details>';
+  show(i);
+  el.querySelector(".fb").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+/* ---------- Final summary ---------- */
+function finish(){
+  document.body.classList.add("finished"); updateTop();
+  const max = Q.length*PER_Q, total = sum(), pct = Math.round(total/max*100);
+  const weak = {};
+  Q.forEach((q,i)=>{ const lost = PER_Q-(res[i]||0); if(lost) weak[q.topic]=(weak[q.topic]||0)+lost; });
+  const areas = Object.entries(weak).sort((a,b)=>b[1]-a[1]).map(([t,m])=>t+" ("+m+" marks lost)");
+  const level = pct>=90?"Excellent":pct>=70?"Good job":pct>=50?"Getting there":"Keep practising";
+  document.getElementById("final").innerHTML =
+    '<div class="big">'+total+' / '+max+'</div><div><b>'+level+'</b> &middot; '+pct+'%</div>'+
+    (areas.length ? '<p style="color:var(--muted)">Topics to revise: '+areas.join(", ")+'.</p>' : '<p style="color:var(--ok)">Full marks. Nothing to revise.</p>')+
+    '<div class="rows">'+Q.map((q,i)=>'<button type="button" data-go="'+i+'" class="'+(res[i]===PER_Q?'ok':'bad')+'"><span>Q'+(i+1)+'</span><b>'+res[i]+'/'+PER_Q+'</b></button>').join("")+'</div>'+
+    '<p style="color:var(--muted);font-size:.9rem">Click a question to review your mistakes.</p>'+
+    '<button type="button" id="again">Try again</button>';
+  document.querySelectorAll(".q").forEach(e=>e.classList.remove("active"));
+  window.scrollTo({top:0});
+}
+document.getElementById("final").addEventListener("click", e=>{
+  const g = e.target.closest("[data-go]"); if(g) show(+g.dataset.go);
+  if(e.target.id==="again") restart(true);
+});
+
+/* ---------- Wiring ---------- */
+Q.forEach((q,i)=>{
+  const el = document.getElementById("q"+i);
+  el.querySelector(".check").addEventListener("click",()=>submitQ(i));
+  el.querySelector(".prev").addEventListener("click",()=>show(i-1));
+  el.querySelector(".next").addEventListener("click",()=>{ if(i===Q.length-1) finish(); else show(i+1); });
+  // Enter moves to the next blank; on the last blank it submits
+  const ins = [...el.querySelectorAll("input")];
+  ins.forEach((inp,k)=>inp.addEventListener("keydown",e=>{
+    if(e.key!=="Enter") return; e.preventDefault();
+    if(k<ins.length-1) ins[k+1].focus(); else submitQ(i);
+  }));
+});
+
+function restart(skipConfirm){
+  if(!skipConfirm && doneCount() && !confirm("Restart and clear all answers and scores?")) return;
+  res.fill(null);
+  document.querySelectorAll(".q").forEach(el=>{
+    el.classList.remove("ok","bad","done");
+    el.querySelector(".marks").textContent = PER_Q+" marks";
+    el.querySelector(".fb").innerHTML = "";
+    el.querySelectorAll("input").forEach(i=>{ i.value=""; i.disabled=false; i.classList.remove("good","wrong"); });
+    el.querySelector(".hint").classList.remove("show"); el.querySelector(".hintbtn").textContent="Show hint";
+  });
+  show(0);
+}
+document.getElementById("reset").addEventListener("click",()=>restart(false));
+show(0);
+</script>
+</body>
+</html>
