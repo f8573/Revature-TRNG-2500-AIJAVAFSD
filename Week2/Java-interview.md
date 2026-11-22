@@ -1,4 +1,4 @@
-1. Classes and Objects
+# 1. Classes and Objects
 1. What is a class in Java?
 2. What is an object in Java?
 3. What is the difference between a class and an object?
@@ -9,7 +9,7 @@
 8. Can a class exist without creating an object?
 9. What happens when we create an object using the new keyword?
 10. What is an anonymous object in Java?
-2. Stack and Heap Memory
+# 2. Stack and Heap Memory
 11. What is stack memory in Java?
 12. What is heap memory in Java?
 13. What is the difference between stack and heap memory?
@@ -20,7 +20,7 @@
 18. What happens when a method is called in Java?
 19. What is a StackOverflowError?
 20. Can two reference variables point to the same object?
-3. Garbage Collection
+# 3. Garbage Collection
 21. What is garbage collection in Java?
 22. Why is garbage collection required?
 23. How does the garbage collector identify unused objects?
@@ -33,7 +33,7 @@
 30. What is a memory leak in Java?
 31. What is the difference between memory leak and garbage collection?
 32. What are strong, weak, soft and phantom references?
-4. Class Members – Fields, Constructors and Methods
+# 4. Class Members – Fields, Constructors and Methods
 33. What are the different members of a Java class?
 34. What is an instance variable?
 35. What is a local variable?
@@ -52,7 +52,7 @@
 48. What happens if we do not define a constructor?
 49. Can a constructor return a value?
 50. What is the difference between a constructor and a method?
-5. Access Modifiers
+# 5. Access Modifiers
 51. What are access modifiers in Java?
 52. What are the four access modifiers in Java?
 53. What is the difference between public, private, protected and default access?
@@ -63,7 +63,7 @@
 58. What is the difference between default access and the default keyword in an interface?
 59. Why should instance variables generally be declared private?
 60. Can we override a method with a more restrictive access modifier?
-6. Non-Access Modifiers
+# 6. Non-Access Modifiers
 61. What are non-access modifiers in Java?
 62. What is the purpose of the final keyword?
 63. What is the difference between final variable, final method and final class?
@@ -74,7 +74,7 @@
 68. What is the purpose of the transient keyword?
 69. What is the purpose of the volatile keyword?
 70. Can a method be both static and abstract?
-7. Static Members
+# 7. Static Members
 71. What is a static variable in Java?
 72. What is a static method?
 73. What is the difference between static and instance methods?
@@ -89,7 +89,7 @@
 82. What is method hiding in Java?
 83. Can we use this or super inside a static method?
 84. Why is the main method declared static?
-8. Interfaces and Abstract Classes
+# 8. Interfaces and Abstract Classes
 85. What is an interface in Java?
 86. What is an abstract class?
 87. What is the difference between an interface and an abstract class?
@@ -108,7 +108,7 @@
 100. What happens when two interfaces contain the same default method?
 101. Can we declare an abstract class without any abstract methods?
 102. When should we use an interface instead of an abstract class?
-9. Methods – Declaration, Parameters and Return Types
+# 9. Methods – Declaration, Parameters and Return Types
 103. What is a method in Java?
 104. What is the syntax of method declaration?
 105. What are the components of a method declaration?
@@ -127,7 +127,7 @@
 118. Is Java pass-by-value or pass-by-reference?
 119. What is variable-length argument (varargs) in Java?
 120. Can we overload a method by changing only its return type?
-10. Method Visibility and Scope
+# 10. Method Visibility and Scope
 121. What are method visibility modifiers?
 122. What is method scope?
 123. What is the difference between local, instance and static variables?
@@ -137,7 +137,7 @@
 127. Can we access a local variable outside its method?
 128. What is variable shadowing?
 129. What is the difference between variable scope and variable lifetime?
-11. equals() and hashCode()
+# 11. equals() and hashCode()
 130. What is the difference between == and equals()?
 131. What is the purpose of the equals() method?
 132. What is the purpose of the hashCode() method?
@@ -148,7 +148,7 @@
 137. How do you override equals() and hashCode() in a custom class?
 138. Why are equals() and hashCode() important for HashMap and HashSet?
 139. What happens when we modify an object's fields after inserting it into a HashMap?
-12. OOP Concepts – Introduction and Encapsulation
+# 12. OOP Concepts – Introduction and Encapsulation
 140. What is object-oriented programming?
 141. What are the four pillars of OOP?
 142. What are the advantages of OOP?
@@ -160,7 +160,7 @@
 148. What is the purpose of getter and setter methods?
 149. Can we achieve encapsulation without using getters and setters?
 150. How does encapsulation improve maintainability and security?
-13. Inheritance and Object Class
+# 13. Inheritance and Object Class
 151. What is inheritance in Java?
 152. What are the different types of inheritance?
 153. Does Java support multiple inheritance using classes?
@@ -179,7 +179,7 @@
 166. What is the purpose of toString()?
 167. What is the difference between getClass() and toString()?
 168. What is the purpose of clone()?
-14. Abstraction
+# 14. Abstraction
 169. What is abstraction in Java?
 170. How is abstraction achieved in Java?
 171. What is the difference between abstraction and encapsulation?
@@ -190,7 +190,7 @@
 176. Can an abstract method be private?
 177. Why can't an abstract class be instantiated?
 178. Give a real-world example of abstraction.
-15. Polymorphism – Overloading and Overriding
+# 15. Polymorphism – Overloading and Overriding
 179. What is polymorphism in Java?
 180. What are the types of polymorphism?
 181. What is compile-time polymorphism?
@@ -238,7 +238,7 @@
 222. Can we catch multiple exceptions in a single catch block?
 223. What is exception propagation?
 224. What happens if an exception is not handled?
-17. Reading Stack Trace
+# 17. Reading Stack Trace
 225. What is a stack trace in Java?
 226. How do you read a Java stack trace?
 227. What does at ClassName.methodName(FileName.java:LineNumber) mean?
@@ -247,7 +247,7 @@
 230. How do you identify the exact line where an exception occurred?
 231. What is a chained exception?
 232. What is the purpose of getCause()?
-18. Creating Custom Exceptions
+# 18. Creating Custom Exceptions
 233. What is a custom exception?
 234. Why do we need custom exceptions?
 235. How do you create a custom checked exception?
