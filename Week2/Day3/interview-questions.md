@@ -1,3 +1,11 @@
+# OOPS
+
+1. What is Encapsulation and explain with example.
+2. What is Abstraction?
+3. Why inheritance is importance?
+4. Define the concept of polymorphism and it type.
+5. Give two scenario to demonstrate the polymorphism. 
+
 #  Inheritance – Important Interview Questions
 1. What is inheritance in Java?
 2. Why do we use inheritance?
