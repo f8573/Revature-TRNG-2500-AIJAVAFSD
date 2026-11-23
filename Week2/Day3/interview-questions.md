@@ -1,4 +1,4 @@
-1. Inheritance – Important Interview Questions
+#  Inheritance – Important Interview Questions
 1. What is inheritance in Java?
 2. Why do we use inheritance?
 3. What are the different types of inheritance supported by Java?
@@ -17,7 +17,8 @@
 16. Can an abstract class extend another abstract class?
 17. Can a final class be inherited?
 18. What is the role of the Object class in Java inheritance?
-2. Polymorphism – Important Interview Questions
+    
+# Polymorphism – Important Interview Questions
 1. What is polymorphism in Java?
 2. What are the two types of polymorphism in Java?
 3. What is compile-time polymorphism?
@@ -33,7 +34,8 @@
 13. Can we call child-specific methods using a parent reference?
 14. What is upcasting and downcasting?
 15. What is the role of the JVM in runtime polymorphism?
-3. Method Overriding – Important Interview Questions
+    
+#  Method Overriding – Important Interview Questions
 1. What is method overriding?
 2. What are the rules for method overriding?
 3. Can we override a private method?
@@ -49,7 +51,8 @@
 13. What happens if the child class does not override the parent method?
 14. Can we override a method and call the parent implementation?
 15. What is the difference between method hiding and method overriding?
-4. super Keyword – Important Interview Questions
+
+# super Keyword – Important Interview Questions
 1. What is the super keyword in Java?
 2. Why do we use the super keyword?
 3. What is the difference between this and super?
@@ -57,12 +60,12 @@
 5. How do we call parent-class methods using super?
 6. How do we call a parent-class constructor using super()?
 7. Can we use super() and this() in the same constructor?
-8. Can we use super() anywhere inside a constructor?
-9. What happens if we do not explicitly call super()?
+8. Can we use super() anywhere inside a constructor?. What happens if we do not explicitly call super()?
 10. Can we use super inside a static method?
 11. Can we call an overridden parent method using super?
 12. Can we use super to access private members of the parent class?
-5. Abstract Class – Important Interview Questions
+  
+# Abstract Class – Important Interview Questions
 1. What is an abstract class in Java?
 2. Why do we use abstract classes?
 3. Can we create an object of an abstract class?
@@ -81,7 +84,8 @@
 16. Can an abstract class have instance variables?
 17. What is the difference between an abstract class and a concrete class?
 18. Can we declare an abstract class as final?
-6. Interface – Important Interview Questions
+
+ # Interface – Important Interview Questions
 1. What is an interface in Java?
 2. Why do we use interfaces?
 3. How do we declare an interface?
@@ -102,7 +106,8 @@
 18. What is the difference between an abstract class and an interface?
 19. What happens if two interfaces contain the same default method?
 20. Can an interface have a main method?
-7. Scanner Class – Important Interview Questions
+
+# Scanner Class – Important Interview Questions
 1. What is the Scanner class in Java?
 2. Which package contains the Scanner class?
 3. How do you create a Scanner object?
@@ -118,7 +123,8 @@
 13. Why should we close the Scanner object?
 14. What happens if we close a Scanner connected to System.in?
 15. Can we use multiple Scanner objects to read from System.in?
-8. Constructors and Constructor Chaining
+    
+#  Constructors and Constructor Chaining
 1. What is a constructor in Java?
 2. What is the difference between a constructor and a method?
 3. What are the different types of constructors?
@@ -134,7 +140,8 @@
 13. Can we call one constructor from another constructor?
 14. What is the order of constructor execution in inheritance?
 15. Why must this() or super() be the first statement in a constructor?
-9. Access Modifiers and Non-Access Modifiers
+
+ # Access Modifiers and Non-Access Modifiers
 1. What are access modifiers in Java?
 2. What is the difference between public, private, protected and default?
 3. Can a top-level class be declared private?
@@ -146,4 +153,4 @@
 9. Can a variable be declared as final?
 10. Can a method be declared as final?
 11. Can a class be declared as final?
-12. What is the difference between final, finally and finalize?
+12. What is the difference between final and finalize?
